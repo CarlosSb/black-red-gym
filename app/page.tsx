@@ -1,104 +1,33 @@
-"use client"
-
-import { useState, useEffect } from "react"
+import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail, Loader2 } from "lucide-react"
+import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail } from "lucide-react"
 import Link from "next/link"
-import DataService, { type PlanData, type AcademySettingsData } from "@/lib/data-service"
-import { useDynamicColors } from "@/hooks/use-dynamic-colors"
+import { getServerSettings, getServerPlans } from "@/lib/server-data"
+import { MobileMenu } from "@/components/mobile-menu"
+import { HomePageClient } from "@/components/home-page-client"
+import { DynamicColorsProvider } from "@/components/dynamic-colors-provider"
+import { MatriculeSeButton } from "@/components/matricule-se-button"
 
-export default function HomePage() {
-  const [settings, setSettings] = useState<AcademySettingsData | null>(null)
-  const [plans, setPlans] = useState<PlanData[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    message: ""
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Apply dynamic colors
-  useDynamicColors(settings)
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [loadedSettings, loadedPlans] = await Promise.all([
-          DataService.getSettings(),
-          DataService.getPlans()
-        ])
-        setSettings(loadedSettings)
-        setPlans(loadedPlans)
-      } catch (error) {
-        console.error("Error loading homepage data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadData()
-  }, [])
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!contactForm.name || !contactForm.email || !contactForm.message) return
-
-    setIsSubmitting(true)
-    try {
-      await DataService.createMessage({
-        name: contactForm.name,
-        email: contactForm.email,
-        phone: contactForm.phone,
-        subject: "Contato via site",
-        message: contactForm.message,
-        status: "unread",
-        priority: "medium"
-      })
-      
-      // Reset form
-      setContactForm({ name: "", phone: "", email: "", message: "" })
-      alert("Mensagem enviada com sucesso! Entraremos em contato em breve.")
-    } catch (error) {
-      console.error("Error sending message:", error)
-      alert("Erro ao enviar mensagem. Tente novamente.")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-red-accent mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!settings) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground">Erro ao carregar dados da academia.</p>
-        </div>
-      </div>
-    )
-  }
+export default async function HomePage() {
+  const [settings, plans] = await Promise.all([
+    getServerSettings(),
+    getServerPlans()
+  ])
 
   return (
-    <div className="min-h-screen bg-background">
+    <DynamicColorsProvider settings={settings}>
+      <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-black-red text-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Dumbbell className="h-8 w-8 text-red-accent" />
+            {settings.logo ? (
+              <img src={settings.logo} alt="Logo" className="h-8 w-8 object-contain" />
+            ) : (
+              <Dumbbell className="h-8 w-8 text-red-accent" />
+            )}
             <h1 className="text-2xl font-bold">{settings.name.toUpperCase()}</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
@@ -116,17 +45,20 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Link href="/login">
-              <Button
-                variant="outline"
-                className="border-red-accent text-red-accent hover:bg-red-accent hover:text-white bg-transparent"
-              >
-                Login
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button className="bg-red-accent hover:bg-red-accent/90">Matricule-se</Button>
-            </Link>
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/login">
+                <Button
+                  variant="outline"
+                  className="border-red-accent text-red-accent hover:bg-red-accent hover:text-white bg-transparent"
+                >
+                  Login
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button className="bg-red-accent hover:bg-red-accent/90">Matricule-se</Button>
+              </Link>
+            </div>
+            <MobileMenu settings={settings} />
           </div>
         </div>
       </header>
@@ -134,19 +66,20 @@ export default function HomePage() {
       {/* Hero Section */}
       <section id="inicio" className="bg-black-red text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-red-accent text-white">Nova Academia</Badge>
+          <Badge className="mb-4 bg-red-accent text-white">{settings.heroSubtitle || "Nova Academia"}</Badge>
           <h2 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
-            TRANSFORME SEU <span className="text-red-accent">CORPO</span>
+            {settings.heroTitle || "TRANSFORME SEU CORPO"}
           </h2>
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto text-pretty">
             {settings.description}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
-              <Button size="lg" className="bg-red-accent hover:bg-red-accent/90 text-white">
-                Comece Hoje
-              </Button>
-            </Link>
+            <MatriculeSeButton
+              settings={settings}
+              className="bg-red-accent hover:bg-red-accent/90 text-white"
+            >
+              Matricule-se
+            </MatriculeSeButton>
             <Button
               size="lg"
               variant="outline"
@@ -162,48 +95,69 @@ export default function HomePage() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">Por que escolher a Black Red?</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || "Por que escolher a Black Red?"}</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Oferecemos tudo que você precisa para alcançar seus objetivos fitness
+              {settings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center border-0 shadow-lg">
-              <CardHeader>
-                <Dumbbell className="h-12 w-12 text-red-accent mx-auto mb-4" />
-                <CardTitle>Equipamentos Modernos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Equipamentos de última geração para todos os tipos de treino</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center border-0 shadow-lg">
-              <CardHeader>
-                <Users className="h-12 w-12 text-red-accent mx-auto mb-4" />
-                <CardTitle>Personal Trainers</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Profissionais qualificados para te orientar em cada exercício</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center border-0 shadow-lg">
-              <CardHeader>
-                <Clock className="h-12 w-12 text-red-accent mx-auto mb-4" />
-                <CardTitle>Horário Flexível</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Aberto das {settings.hours.weekdays.open} às {settings.hours.weekdays.close} para se adequar à sua rotina</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center border-0 shadow-lg">
-              <CardHeader>
-                <Trophy className="h-12 w-12 text-red-accent mx-auto mb-4" />
-                <CardTitle>Resultados Garantidos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">Metodologia comprovada para alcançar seus objetivos</p>
-              </CardContent>
-            </Card>
+            {settings.features?.items?.map((feature, index) => {
+              const IconComponent = feature.icon === "Dumbbell" ? Dumbbell : 
+                                  feature.icon === "Users" ? Users :
+                                  feature.icon === "Clock" ? Clock :
+                                  feature.icon === "Trophy" ? Trophy : Dumbbell
+              
+              return (
+                <Card key={index} className="text-center border-0 shadow-lg">
+                  <CardHeader>
+                    <IconComponent className="h-12 w-12 text-red-accent mx-auto mb-4" />
+                    <CardTitle>{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              )
+            }) || (
+              <>
+                <Card className="text-center border-0 shadow-lg">
+                  <CardHeader>
+                    <Dumbbell className="h-12 w-12 text-red-accent mx-auto mb-4" />
+                    <CardTitle>Equipamentos Modernos</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Equipamentos de última geração para todos os tipos de treino</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-0 shadow-lg">
+                  <CardHeader>
+                    <Users className="h-12 w-12 text-red-accent mx-auto mb-4" />
+                    <CardTitle>Personal Trainers</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Profissionais qualificados para te orientar em cada exercício</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-0 shadow-lg">
+                  <CardHeader>
+                    <Clock className="h-12 w-12 text-red-accent mx-auto mb-4" />
+                    <CardTitle>Horário Flexível</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Aberto das {settings.hours.weekdays.open} às {settings.hours.weekdays.close} para se adequar à sua rotina</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-0 shadow-lg">
+                  <CardHeader>
+                    <Trophy className="h-12 w-12 text-red-accent mx-auto mb-4" />
+                    <CardTitle>Resultados Garantidos</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Metodologia comprovada para alcançar seus objetivos</p>
+                  </CardContent>
+                </Card>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -265,25 +219,33 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h3 className="text-3xl md:text-4xl font-bold mb-6">Sobre a {settings.name}</h3>
-              <p className="text-lg text-muted-foreground mb-6 text-pretty">
-                Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos
-                tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
-              </p>
-              <p className="text-lg text-muted-foreground mb-8 text-pretty">
-                Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos,
-                seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.
-              </p>
+              <div className="text-lg text-muted-foreground mb-8 text-pretty">
+                {settings.about ? (
+                  <p>{settings.about}</p>
+                ) : (
+                  <>
+                    <p className="mb-6">
+                      Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos
+                      tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
+                    </p>
+                    <p>
+                      Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos,
+                      seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.
+                    </p>
+                  </>
+                )}
+              </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">500+</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.activeMembers || 500}+</div>
                   <div className="text-sm text-muted-foreground">Alunos Ativos</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">15</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.personalTrainers || 15}</div>
                   <div className="text-sm text-muted-foreground">Personal Trainers</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">24/7</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.operatingHours || "24/7"}</div>
                   <div className="text-sm text-muted-foreground">Funcionamento</div>
                 </div>
               </div>
@@ -320,49 +282,9 @@ export default function HomePage() {
                 <CardDescription>Responderemos em até 24 horas</CardDescription>
               </CardHeader>
               <CardContent className="px-0 space-y-4">
-                <form onSubmit={handleContactSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input 
-                      placeholder="Nome" 
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
-                      required
-                    />
-                    <Input 
-                      placeholder="Telefone" 
-                      value={contactForm.phone}
-                      onChange={(e) => setContactForm(prev => ({ ...prev, phone: e.target.value }))}
-                    />
-                  </div>
-                  <Input 
-                    placeholder="E-mail" 
-                    type="email"
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
-                    required
-                  />
-                  <Textarea 
-                    placeholder="Sua mensagem..." 
-                    rows={4}
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
-                    required
-                  />
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-red-accent hover:bg-red-accent/90"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Enviando...
-                      </>
-                    ) : (
-                      "Enviar Mensagem"
-                    )}
-                  </Button>
-                </form>
+                <Suspense fallback={<div>Carregando formulário...</div>}>
+                  <HomePageClient settings={settings} plans={plans} />
+                </Suspense>
               </CardContent>
             </Card>
 
@@ -475,6 +397,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </DynamicColorsProvider>
   )
 }

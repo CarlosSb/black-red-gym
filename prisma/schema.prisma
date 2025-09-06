@@ -42,6 +42,18 @@ model Message {
   @@map("messages")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // Hashed password
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
 model AcademySettings {
   id          String   @id @default(cuid())
   name        String
@@ -49,9 +61,17 @@ model AcademySettings {
   phone       String
   email       String
   address     String
+  whatsapp    String?  // WhatsApp number for contact
   hours       Json     // Store hours as JSON
   colors      Json     // Store colors as JSON
   notifications Json   // Store notifications as JSON
+  logo        String?  // Logo image path
+  about       String?  // About section content
+  heroTitle   String?  // Hero section title
+  heroSubtitle String? // Hero section subtitle
+  heroImage   String?  // Hero section image
+  features    Json?    // Store features as JSON
+  metrics     Json?    // Store academy metrics as JSON
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -72,4 +92,9 @@ enum Priority {
   LOW
   MEDIUM
   HIGH
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
