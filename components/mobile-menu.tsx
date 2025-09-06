@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -14,21 +14,35 @@ interface MobileMenuProps {
 export function MobileMenu({ settings }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false)
 
+  const breakpoint = 768
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= breakpoint && isOpen) {
+        setIsOpen(false) 
+      }
+    }
+
+    handleResize()
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [isOpen, setIsOpen])
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
           size="sm"
-          className="md:hidden text-white hover:text-red-accent"
+          className="md:hidden text-white hover:text-black"
         >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Abrir menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black-red text-white">
+      <SheetContent side="right" hideClose className="w-[300px] sm:w-[400px] bg-black-red text-white md:hidden">
         <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full p-4">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
@@ -43,7 +57,7 @@ export function MobileMenu({ settings }: MobileMenuProps) {
               variant="ghost"
               size="sm"
               onClick={() => setIsOpen(false)}
-              className="text-white hover:text-red-accent"
+              className="text-white hover:text-black"
             >
               <X className="h-6 w-6" />
             </Button>
@@ -82,7 +96,7 @@ export function MobileMenu({ settings }: MobileMenuProps) {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="space-y-3 pt-6 border-t border-gray-700">
+          <div className="space-y-3 pt-6 border-t border-gray-700 ">
             <Link href="/login" className="block" onClick={() => setIsOpen(false)}>
               <Button
                 variant="outline"
