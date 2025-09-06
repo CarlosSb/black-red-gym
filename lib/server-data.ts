@@ -159,7 +159,7 @@ export async function getServerPlans(): Promise<PlanData[]> {
       orderBy: { price: 'asc' }
     })
 
-    return plans.map(plan => ({
+    return plans.map((plan: any) => ({
       id: plan.id,
       name: plan.name,
       price: plan.price,
