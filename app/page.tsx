@@ -192,7 +192,7 @@ export default function HomePage() {
                 <CardTitle>Horário Flexível</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Aberto das 5h às 23h para se adequar à sua rotina</p>
+                <p className="text-muted-foreground">Aberto das {settings.hours.weekdays.open} às {settings.hours.weekdays.close} para se adequar à sua rotina</p>
               </CardContent>
             </Card>
             <Card className="text-center border-0 shadow-lg">
@@ -218,7 +218,10 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {plans.filter(plan => plan.status === "active").map((plan) => (
+            {plans
+              .filter(plan => plan.status === "active")
+              .sort((planA, planB) => planA.price - planB.price)
+              .map((plan) => (
               <Card 
                 key={plan.id} 
                 className={`border-2 transition-colors ${
