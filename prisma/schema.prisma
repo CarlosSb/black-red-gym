@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Plan {
+  id              String   @id @default(cuid())
+  name            String
+  price           Float
+  description     String
+  features        String[] // Array of strings for features
+  activeMembers   Int      @default(0)
+  monthlyRevenue  Float    @default(0)
+  status          PlanStatus @default(ACTIVE)
+  popular         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("plans")
+}
+
+model Message {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  subject     String
+  message     String
+  date        DateTime      @default(now())
+  status      MessageStatus @default(UNREAD)
+  priority    Priority      @default(MEDIUM)
+  response    String?
+  respondedAt DateTime?
+
+  @@map("messages")
+}
+
+model AcademySettings {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  phone       String
+  email       String
+  address     String
+  hours       Json     // Store hours as JSON
+  colors      Json     // Store colors as JSON
+  notifications Json   // Store notifications as JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("academy_settings")
+}
+
+enum PlanStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum MessageStatus {
+  READ
+  UNREAD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
