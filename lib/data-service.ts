@@ -35,6 +35,7 @@ export type AcademySettingsData = {
   phone: string
   email: string
   address: string
+  whatsapp?: string
   hours: {
     weekdays: { open: string; close: string }
     saturday: { open: string; close: string }
@@ -49,6 +50,26 @@ export type AcademySettingsData = {
     newMembers: boolean
     payments: boolean
     weeklyReports: boolean
+  }
+  logo?: string
+  about?: string
+  heroTitle?: string
+  heroSubtitle?: string
+  heroImage?: string
+  features?: {
+    title: string
+    description: string
+    items: Array<{
+      icon: string
+      title: string
+      description: string
+    }>
+  }
+  metrics?: {
+    activeMembers: number
+    personalTrainers: number
+    operatingHours: string
+    foundedYear: number
   }
 }
 
@@ -221,6 +242,7 @@ class DataService {
       phone: "(11) 99999-9999",
       email: "contato@blackred.com.br",
       address: "Rua das Academias, 123 - Centro",
+      whatsapp: "5511999999999",
       hours: {
         weekdays: { open: "05:00", close: "23:00" },
         saturday: { open: "06:00", close: "20:00" },
@@ -236,6 +258,43 @@ class DataService {
         payments: true,
         weeklyReports: false,
       },
+      logo: "/placeholder-logo.png",
+      about: "Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino. Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos, seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.",
+      heroTitle: "TRANSFORME SEU CORPO",
+      heroSubtitle: "Nova Academia",
+      heroImage: "/modern-gym-interior-with-red-and-black-equipment.jpg",
+      features: {
+        title: "Por que escolher a Black Red?",
+        description: "Oferecemos tudo que você precisa para alcançar seus objetivos fitness",
+        items: [
+          {
+            icon: "Dumbbell",
+            title: "Equipamentos Modernos",
+            description: "Equipamentos de última geração para todos os tipos de treino"
+          },
+          {
+            icon: "Users",
+            title: "Personal Trainers",
+            description: "Profissionais qualificados para te orientar em cada exercício"
+          },
+          {
+            icon: "Clock",
+            title: "Horário Flexível",
+            description: "Aberto das 05:00 às 23:00 para se adequar à sua rotina"
+          },
+          {
+            icon: "Trophy",
+            title: "Resultados Garantidos",
+            description: "Metodologia comprovada para alcançar seus objetivos"
+          }
+        ]
+      },
+      metrics: {
+        activeMembers: 500,
+        personalTrainers: 15,
+        operatingHours: "24/7",
+        foundedYear: 2024
+      }
     }
   }
 

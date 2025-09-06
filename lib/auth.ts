@@ -2,7 +2,7 @@ export interface User {
   id: string
   email: string
   name: string
-  role: "admin" | "user"
+  role: "ADMIN" | "USER"
   createdAt: string
 }
 
@@ -12,20 +12,8 @@ export interface AuthState {
   isLoading: boolean
 }
 
-// Mock user database (in production, this would be in a real database)
-const MOCK_USERS: User[] = [
-  {
-    id: "1",
-    email: "admin@blackred.com.br",
-    name: "Administrador",
-    role: "admin",
-    createdAt: new Date().toISOString(),
-  },
-]
-
 export class AuthService {
   private static readonly STORAGE_KEY = "blackred_auth"
-  private static readonly USERS_KEY = "blackred_users"
 
   static getStoredAuth(): AuthState {
     if (typeof window === "undefined") {
@@ -57,48 +45,28 @@ export class AuthService {
     }
   }
 
-  static getUsers(): User[] {
-    if (typeof window === "undefined") return MOCK_USERS
-
+  static async login(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
     try {
-      const stored = localStorage.getItem(this.USERS_KEY)
-      if (stored) {
-        return JSON.parse(stored)
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const result = await response.json()
+
+      if (result.success && result.user) {
+        this.setStoredAuth(result.user)
+        return { success: true, user: result.user }
+      } else {
+        return { success: false, error: result.error || 'Erro ao fazer login' }
       }
     } catch (error) {
-      console.error("Error reading users from storage:", error)
+      console.error("Login error:", error)
+      return { success: false, error: "Erro interno do servidor" }
     }
-
-    // Initialize with mock users
-    this.setUsers(MOCK_USERS)
-    return MOCK_USERS
-  }
-
-  static setUsers(users: User[]): void {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(this.USERS_KEY, JSON.stringify(users))
-    }
-  }
-
-  static async login(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    const users = this.getUsers()
-    const user = users.find((u) => u.email === email)
-
-    if (!user) {
-      return { success: false, error: "Usuário não encontrado" }
-    }
-
-    // In production, you would verify the password hash
-    // For demo purposes, we'll accept any password for existing users
-    if (password.length < 6) {
-      return { success: false, error: "Senha deve ter pelo menos 6 caracteres" }
-    }
-
-    this.setStoredAuth(user)
-    return { success: true, user }
   }
 
   static async register(
@@ -106,32 +74,27 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ success: boolean; user?: User; error?: string }> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      })
 
-    const users = this.getUsers()
+      const result = await response.json()
 
-    if (users.find((u) => u.email === email)) {
-      return { success: false, error: "E-mail já cadastrado" }
+      if (result.success && result.user) {
+        this.setStoredAuth(result.user)
+        return { success: true, user: result.user }
+      } else {
+        return { success: false, error: result.error || 'Erro ao criar conta' }
+      }
+    } catch (error) {
+      console.error("Registration error:", error)
+      return { success: false, error: "Erro interno do servidor" }
     }
-
-    if (password.length < 6) {
-      return { success: false, error: "Senha deve ter pelo menos 6 caracteres" }
-    }
-
-    const newUser: User = {
-      id: Date.now().toString(),
-      email,
-      name,
-      role: "user",
-      createdAt: new Date().toISOString(),
-    }
-
-    const updatedUsers = [...users, newUser]
-    this.setUsers(updatedUsers)
-    this.setStoredAuth(newUser)
-
-    return { success: true, user: newUser }
   }
 
   static logout(): void {
