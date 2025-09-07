@@ -46,6 +46,12 @@ export default async function HomePage() {
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">
+              <MatriculeSeButton
+                settings={settings}
+                className="bg-red-accent hover:bg-red-accent/90 text-white"
+              >
+                Matricule-se
+              </MatriculeSeButton>
               <Link href="/login">
                 <Button
                   variant="outline"
@@ -53,9 +59,6 @@ export default async function HomePage() {
                 >
                   Login
                 </Button>
-              </Link>
-              <Link href="/register">
-                <Button className="bg-red-accent hover:bg-red-accent/90">Matricule-se</Button>
               </Link>
             </div>
             <MobileMenu settings={settings} />
@@ -80,13 +83,16 @@ export default async function HomePage() {
             >
               Matricule-se
             </MatriculeSeButton>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-black bg-transparent"
-            >
-              Conheça a Academia
-            </Button>
+
+            <Link href="#sobre">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+              >
+                Conheça a Academia
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -196,7 +202,7 @@ export default async function HomePage() {
                     R$ {plan.price}<span className="text-lg text-muted-foreground">/mês</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 flex flex-col justify-between h-full">
                   <ul className="space-y-2">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
