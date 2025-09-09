@@ -179,21 +179,31 @@ export default function SettingsPage() {
         body: formData,
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Upload failed - Status:', response.status, errorText)
+        alert(`Erro ao fazer upload: ${response.status} - ${response.statusText}`)
+        return
+      }
+
       const result = await response.json()
       if (result.success) {
         const updatedSettings = await DataService.updateSettings({
           logo: result.url,
         })
         setSettings(updatedSettings)
+        alert('Logo atualizado com sucesso!')
       } else {
         console.error('Upload failed:', result.error)
-        alert('Erro ao fazer upload: ' + result.error)
+        alert('Erro ao fazer upload: ' + (result.error || 'Erro desconhecido'))
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Erro ao fazer upload da imagem')
+      alert('Erro ao fazer upload da imagem. Verifique sua conexão.')
     } finally {
       setIsUploading(false)
+      // Limpar o input para permitir novo upload
+      event.target.value = ''
     }
   }
 
@@ -211,18 +221,28 @@ export default function SettingsPage() {
         body: formData,
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Hero image upload failed - Status:', response.status, errorText)
+        alert(`Erro ao fazer upload da imagem: ${response.status} - ${response.statusText}`)
+        return
+      }
+
       const result = await response.json()
       if (result.success) {
         setSettings({ ...settings!, heroImage: result.url })
+        alert('Imagem do hero atualizada com sucesso!')
       } else {
-        console.error('Upload failed:', result.error)
-        alert('Erro ao fazer upload: ' + result.error)
+        console.error('Hero image upload failed:', result.error)
+        alert('Erro ao fazer upload: ' + (result.error || 'Erro desconhecido'))
       }
     } catch (error) {
-      console.error('Upload error:', error)
-      alert('Erro ao fazer upload da imagem')
+      console.error('Hero image upload error:', error)
+      alert('Erro ao fazer upload da imagem. Verifique sua conexão.')
     } finally {
       setIsUploading(false)
+      // Limpar o input para permitir novo upload
+      event.target.value = ''
     }
   }
 
@@ -438,7 +458,7 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5" />
-              Seção "Por que escolher a Black Red"
+              Seção &ldquo;Por que escolher a Black Red&rdquo;
             </CardTitle>
             <CardDescription>Configure os itens de destaque da academia</CardDescription>
           </CardHeader>

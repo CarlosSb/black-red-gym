@@ -13,13 +13,21 @@ async function verifyAdmin() {
       return null
     }
 
-    const user = JSON.parse(authCookie.value)
+    let user
+    try {
+      user = JSON.parse(authCookie.value)
+    } catch (parseError) {
+      console.error("Erro ao fazer parse do cookie de autenticação:", parseError)
+      return null
+    }
+
     if (user.role !== "ADMIN") {
       return null
     }
 
     return user
   } catch (error) {
+    console.error("💥 Erro ao verificar admin:", error)
     return null
   }
 }
@@ -51,8 +59,19 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    console.log(`Encontrados ${users.length} usuários:`, users.map(u => ({ id: u.id, email: u.email, name: u.name, role: u.role, status: u.status })))
-    console.log(`Usuário admin atual:`, adminUser)
+    // Verificar se há usuários no banco
+    if (users.length === 0) {
+      // Verificar se a tabela existe e tem dados
+      const allUsers = await prisma.user.findMany()
+      if (allUsers.length === 0) {
+        return NextResponse.json({
+          success: true,
+          users: [],
+          total: 0,
+          message: "Nenhum usuário encontrado. Execute o seed para criar usuários de teste."
+        })
+      }
+    }
 
     return NextResponse.json({
       success: true,

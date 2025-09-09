@@ -228,7 +228,8 @@ class DataService {
       if (!response.ok) {
         throw new Error('Failed to fetch settings')
       }
-      return await response.json()
+      const data = await response.json()
+      return data.settings
     } catch (error) {
       console.error("Error reading settings:", error)
       return this.getDefaultSettings()
@@ -308,12 +309,13 @@ class DataService {
         },
         body: JSON.stringify(updates),
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to update settings')
       }
-      
-      return await response.json()
+
+      const data = await response.json()
+      return data.settings
     } catch (error) {
       console.error("Error updating settings:", error)
       throw error

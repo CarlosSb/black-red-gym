@@ -409,7 +409,7 @@ export default function TestimonialsPage() {
             <div className="text-center py-8 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Nenhum depoimento cadastrado</p>
-              <p className="text-sm">Clique em "Novo Depoimento" para adicionar o primeiro.</p>
+              <p className="text-sm">Clique em &ldquo;Novo Depoimento&rdquo; para adicionar o primeiro.</p>
             </div>
           )}
         </CardContent>

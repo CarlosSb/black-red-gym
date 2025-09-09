@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,6 +43,16 @@ export async function POST(request: NextRequest) {
       role: dbUser.role,
       createdAt: dbUser.createdAt.toISOString(),
     }
+
+    // Set HTTP cookie for authentication
+    const cookieStore = await cookies()
+    cookieStore.set('blackred_auth', JSON.stringify(user), {
+      httpOnly: false, // Allow client-side access
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    })
 
     return NextResponse.json({ success: true, user })
   } catch (error) {

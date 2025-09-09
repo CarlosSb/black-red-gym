@@ -22,7 +22,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Load auth state from storage on mount
+    console.log("🔄 Carregando estado de autenticação...")
     const stored = AuthService.getStoredAuth()
+    console.log("📦 Estado armazenado:", stored)
     setAuthState({ ...stored, isLoading: false })
   }, [])
 
@@ -39,21 +41,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       })
 
       // Redirecionamento baseado no tipo de usuário
-      if (typeof window !== 'undefined') {
-        const router = (await import('next/navigation')).redirect
-
-        if (redirectTo) {
-          // Se foi especificado um redirecionamento, usar ele
-          window.location.href = redirectTo
+      if (redirectTo) {
+        // Se foi especificado um redirecionamento, usar ele
+        window.location.href = redirectTo
+      } else {
+        // Redirecionamento automático baseado no tipo de usuário
+        if (result.user.role === 'ADMIN') {
+          window.location.href = '/dashboard'
+        } else if (result.user.role === 'USER') {
+          window.location.href = '/student/dashboard'
         } else {
-          // Redirecionamento automático baseado no tipo de usuário
-          if (result.user.role === 'ADMIN') {
-            window.location.href = '/dashboard'
-          } else if (result.user.role === 'USER') {
-            window.location.href = '/student/dashboard'
-          } else {
-            window.location.href = '/'
-          }
+          window.location.href = '/'
         }
       }
 
@@ -86,7 +84,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = `/api/auth/google?action=${action}`
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Call logout API to clear server-side cookie
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
+
+    // Clear client-side state
     AuthService.logout()
     setAuthState({
       user: null,

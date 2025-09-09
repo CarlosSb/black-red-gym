@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Users, UserPlus, Ban, CheckCircle, XCircle, Search, MoreHorizontal, Shield, User, Activity, Calendar, Clock } from "lucide-react"
+import { Users, UserPlus, Ban, CheckCircle, XCircle, Search, MoreHorizontal, Shield, User, Activity, Calendar, Clock, Edit, Key } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
 interface User {
@@ -27,11 +27,24 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
     password: "",
     role: "USER" as "USER" | "ADMIN"
+  })
+  const [editUser, setEditUser] = useState({
+    name: "",
+    email: "",
+    role: "USER" as "USER" | "ADMIN"
+  })
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
   })
 
   useEffect(() => {
@@ -41,15 +54,32 @@ export default function UsersPage() {
   const loadUsers = async () => {
     try {
       const response = await fetch("/api/users")
+
       if (response.ok) {
         const data = await response.json()
-        setUsers(data.users)
+        setUsers(data.users || [])
+      } else {
+        let errorData: any = {}
+        try {
+          const responseText = await response.text()
+          if (responseText) {
+            errorData = JSON.parse(responseText)
+          }
+        } catch (parseError) {
+          errorData = { error: `Erro ${response.status}: ${response.statusText}` }
+        }
+
+        toast({
+          title: "Erro",
+          description: errorData?.error || `Erro ${response.status}: ${response.statusText}`,
+          variant: "destructive"
+        })
       }
     } catch (error) {
-      console.error("Erro ao carregar usuários:", error)
+      console.error("Erro ao carregar usuários:", (error as any)?.message || error)
       toast({
         title: "Erro",
-        description: "Não foi possível carregar a lista de usuários.",
+        description: "Erro de conexão. Verifique sua conexão com a internet.",
         variant: "destructive"
       })
     } finally {
@@ -87,6 +117,115 @@ export default function UsersPage() {
       }
     } catch (error) {
       console.error("Erro ao criar usuário:", error)
+      toast({
+        title: "Erro",
+        description: "Erro interno do servidor.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleEditUser = (user: User) => {
+    setEditingUser(user)
+    setEditUser({
+      name: user.name,
+      email: user.email,
+      role: user.role
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingUser) return
+
+    try {
+      const response = await fetch(`/api/users/${editingUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(editUser)
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Sucesso",
+          description: "Usuário atualizado com sucesso!",
+        })
+        setIsEditDialogOpen(false)
+        setEditingUser(null)
+        loadUsers()
+      } else {
+        const error = await response.json()
+        toast({
+          title: "Erro",
+          description: error.error || "Erro ao atualizar usuário.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error)
+      toast({
+        title: "Erro",
+        description: "Erro interno do servidor.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleChangePassword = (user: User) => {
+    setEditingUser(user)
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
+    })
+    setIsPasswordDialogOpen(true)
+  }
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingUser) return
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/users/${editingUser.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Sucesso",
+          description: "Senha alterada com sucesso!",
+        })
+        setIsPasswordDialogOpen(false)
+        setEditingUser(null)
+      } else {
+        const error = await response.json()
+        toast({
+          title: "Erro",
+          description: error.error || "Erro ao alterar senha.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error("Erro ao alterar senha:", error)
       toast({
         title: "Erro",
         description: "Erro interno do servidor.",
@@ -305,6 +444,119 @@ export default function UsersPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Edit User Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Editar Usuário</DialogTitle>
+              <DialogDescription>
+                Atualize as informações do usuário selecionado.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-name">Nome Completo</Label>
+                <Input
+                  id="edit-name"
+                  value={editUser.name}
+                  onChange={(e) => setEditUser(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-email">E-mail</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={editUser.email}
+                  onChange={(e) => setEditUser(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-role">Tipo de Usuário</Label>
+                <Select value={editUser.role} onValueChange={(value: "USER" | "ADMIN") => setEditUser(prev => ({ ...prev, role: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USER">Usuário Comum</SelectItem>
+                    <SelectItem value="ADMIN">Administrador</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" className="bg-red-accent hover:bg-red-accent/90">
+                  Salvar Alterações
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Change Password Dialog */}
+        <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Alterar Senha</DialogTitle>
+              <DialogDescription>
+                Digite a nova senha para o usuário.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdatePassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="current-password">Senha Atual (opcional)</Label>
+                <Input
+                  id="current-password"
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  placeholder="Digite a senha atual para verificação"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-password">Nova Senha</Label>
+                <Input
+                  id="new-password"
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password">Confirmar Nova Senha</Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsPasswordDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button type="submit" className="bg-red-accent hover:bg-red-accent/90">
+                  Alterar Senha
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Users Table */}
@@ -350,39 +602,59 @@ export default function UsersPage() {
                     {new Date(user.createdAt).toLocaleDateString("pt-BR")}
                   </TableCell>
                   <TableCell className="text-right">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          {user.status === "BANNED" ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <Ban className="h-4 w-4 text-red-600" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {user.status === "BANNED" ? "Reativar Usuário" : "Banir Usuário"}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {user.status === "BANNED"
-                              ? `Tem certeza que deseja reativar o acesso de ${user.name}?`
-                              : `Tem certeza que deseja banir ${user.name}? O usuário perderá o acesso ao sistema.`
-                            }
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleToggleUserStatus(user.id, user.status)}
-                            className={user.status === "BANNED" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
-                          >
-                            {user.status === "BANNED" ? "Reativar" : "Banir"}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditUser(user)}
+                        title="Editar usuário"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleChangePassword(user)}
+                        title="Alterar senha"
+                      >
+                        <Key className="h-4 w-4" />
+                      </Button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" title={user.status === "BANNED" ? "Reativar usuário" : "Banir usuário"}>
+                            {user.status === "BANNED" ? (
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <Ban className="h-4 w-4 text-red-600" />
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {user.status === "BANNED" ? "Reativar Usuário" : "Banir Usuário"}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {user.status === "BANNED"
+                                ? `Tem certeza que deseja reativar o acesso de ${user.name}?`
+                                : `Tem certeza que deseja banir ${user.name}? O usuário perderá o acesso ao sistema.`
+                              }
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleToggleUserStatus(user.id, user.status)}
+                              className={user.status === "BANNED" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
+                            >
+                              {user.status === "BANNED" ? "Reativar" : "Banir"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

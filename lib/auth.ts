@@ -13,7 +13,7 @@ export interface AuthState {
 }
 
 export class AuthService {
-  private static readonly STORAGE_KEY = "blackred_auth"
+  private static readonly COOKIE_NAME = "blackred_auth"
 
   static getStoredAuth(): AuthState {
     if (typeof window === "undefined") {
@@ -21,13 +21,15 @@ export class AuthService {
     }
 
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY)
-      if (stored) {
-        const user = JSON.parse(stored)
+      // Try to get auth data from cookie
+      const cookieValue = this.getCookie(this.COOKIE_NAME)
+
+      if (cookieValue) {
+        const user = JSON.parse(cookieValue)
         return { user, isAuthenticated: true, isLoading: false }
       }
     } catch (error) {
-      console.error("Error reading auth from storage:", error)
+      console.error("Error reading auth from cookie:", error)
     }
 
     return { user: null, isAuthenticated: false, isLoading: false }
@@ -35,14 +37,28 @@ export class AuthService {
 
   static setStoredAuth(user: User): void {
     if (typeof window !== "undefined") {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user))
+      // Set cookie via document.cookie for client-side
+      const cookieValue = JSON.stringify(user)
+      document.cookie = `${this.COOKIE_NAME}=${encodeURIComponent(cookieValue)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=lax`
     }
   }
 
   static clearStoredAuth(): void {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(this.STORAGE_KEY)
+      // Clear cookie
+      document.cookie = `${this.COOKIE_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`
     }
+  }
+
+  private static getCookie(name: string): string | null {
+    if (typeof window === "undefined") return null
+
+    const value = `; ${document.cookie}`
+    const parts = value.split(`; ${name}=`)
+    if (parts.length === 2) {
+      return decodeURIComponent(parts.pop()?.split(';').shift() || '')
+    }
+    return null
   }
 
   static async login(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {

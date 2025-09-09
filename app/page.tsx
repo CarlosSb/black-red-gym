@@ -1,5 +1,3 @@
-"use client"
-
 import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,39 +12,99 @@ import { CheckInModal } from "@/components/checkin-modal"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { AppointmentModal } from "@/components/appointment-modal"
 import { PlanSelectionModal } from "@/components/plan-selection-modal"
-import { useAcademySettings } from "@/hooks/use-academy-settings"
-import { usePlans } from "@/hooks/use-plans"
 
-function HomePageContent() {
-  const { settings, isLoading: settingsLoading } = useAcademySettings()
-  const { plans, isLoading: plansLoading } = usePlans()
+async function HomePageContent() {
+  // Fetch settings from API
+  const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/settings`, {
+    cache: 'no-store' // Ensure fresh data for SSR
+  })
+  const settingsData = await settingsResponse.json()
+  const settings = settingsData.success ? settingsData.settings : null
 
-  const isLoading = settingsLoading || plansLoading
+  // Fetch plans from API
+  const plansResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/plans`, {
+    cache: 'no-store'
+  })
+  const plansData = await plansResponse.json()
+  const plans = plansData.success ? plansData.plans : []
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-red-accent" />
-          <p className="text-muted-foreground">Carregando...</p>
-        </div>
-      </div>
-    )
+  // Fallback settings if API fails
+  const defaultSettings = {
+    name: "Black Red Academia",
+    description: "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
+    phone: "(11) 99999-9999",
+    email: "contato@blackred.com.br",
+    address: "Rua das Academias, 123 - Centro",
+    whatsapp: "5511999999999",
+    hours: {
+      weekdays: { open: "05:00", close: "23:00" },
+      saturday: { open: "06:00", close: "20:00" },
+      sunday: { open: "08:00", close: "18:00" }
+    },
+    colors: {
+      primary: "#DC2626",
+      secondary: "#000000"
+    },
+    notifications: {
+      newMessages: true,
+      newMembers: true,
+      payments: true,
+      weeklyReports: false
+    },
+    logo: "/placeholder-logo.png",
+    about: "Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino. Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos, seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.",
+    heroTitle: "TRANSFORME SEU CORPO",
+    heroSubtitle: "Nova Academia",
+    heroImage: "/modern-gym-interior-with-red-and-black-equipment.jpg",
+    features: {
+      title: "Por que escolher a Black Red?",
+      description: "Oferecemos tudo que você precisa para alcançar seus objetivos fitness",
+      items: [
+        {
+          icon: "Dumbbell",
+          title: "Equipamentos Modernos",
+          description: "Equipamentos de última geração para todos os tipos de treino"
+        },
+        {
+          icon: "Users",
+          title: "Personal Trainers",
+          description: "Profissionais qualificados para te orientar em cada exercício"
+        },
+        {
+          icon: "Clock",
+          title: "Horário Flexível",
+          description: "Aberto das 05:00 às 23:00 para se adequar à sua rotina"
+        },
+        {
+          icon: "Trophy",
+          title: "Resultados Garantidos",
+          description: "Metodologia comprovada para alcançar seus objetivos"
+        }
+      ]
+    },
+    metrics: {
+      activeMembers: 500,
+      personalTrainers: 15,
+      operatingHours: "24/7",
+      foundedYear: 2024
+    }
   }
 
+  const finalSettings = settings || defaultSettings
+
   return (
-    <DynamicColorsProvider settings={settings}>
+    <DynamicColorsProvider settings={finalSettings}>
       <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-black-red text-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {settings.logo ? (
-              <img src={settings.logo} alt="Logo" className="h-8 w-8 object-contain" />
+            {finalSettings.logo ? (
+              <img src={finalSettings.logo} alt="Logo" className="h-8 w-8 object-contain" />
             ) : (
               <Dumbbell className="h-8 w-8 text-red-accent" />
             )}
-            <h1 className="text-2xl font-bold">{settings.name?.toUpperCase() || "ACADEMIA"}</h1>
+            <h1 className="text-2xl font-bold">{finalSettings.name?.toUpperCase() || "ACADEMIA"}</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#inicio" className="hover:text-red-accent transition-colors">
@@ -64,19 +122,19 @@ function HomePageContent() {
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/student/login">
+              <Link href="/login">
                 <Button
                   variant="outline"
                   className="border-red-accent text-red-accent hover:bg-red-accent hover:text-white bg-transparent"
                 >
-                  Área do Aluno
+                  Login
                 </Button>
               </Link>
               <Link href="/register">
                 <Button className="bg-red-accent hover:bg-red-accent/90">Matricule-se</Button>
               </Link>
             </div>
-            <MobileMenu settings={settings} />
+            <MobileMenu settings={finalSettings} />
           </div>
         </div>
       </header>
@@ -84,18 +142,18 @@ function HomePageContent() {
       {/* Hero Section */}
       <section id="inicio" className="bg-black-red text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-red-accent text-white">{settings.heroSubtitle || "Nova Academia"}</Badge>
+          <Badge className="mb-4 bg-red-accent text-white">{finalSettings.heroSubtitle || "Nova Academia"}</Badge>
           <h2 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
-            {settings.heroTitle || "TRANSFORME SEU CORPO"}
+            {finalSettings.heroTitle || "TRANSFORME SEU CORPO"}
           </h2>
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto text-pretty">
-            {settings.description}
+            {finalSettings.description}
           </p>
 
           {/* Botões na parte inferior */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
             <MatriculeSeButton
-              settings={settings}
+              settings={finalSettings}
               className="bg-red-accent hover:bg-red-accent/90 text-white"
             >
               Matricule-se
@@ -133,18 +191,18 @@ function HomePageContent() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || `Por que escolher a ${settings.name}?`}</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">{finalSettings.features?.title || `Por que escolher a ${finalSettings.name}?`}</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {settings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
+              {finalSettings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {settings.features?.items?.map((feature, index) => {
-              const IconComponent = feature.icon === "Dumbbell" ? Dumbbell : 
-                                  feature.icon === "Users" ? Users :
-                                  feature.icon === "Clock" ? Clock :
-                                  feature.icon === "Trophy" ? Trophy : Dumbbell
-              
+            {finalSettings.features?.items?.map((feature: any, index: number) => {
+              const IconComponent = feature.icon === "Dumbbell" ? Dumbbell :
+                                   feature.icon === "Users" ? Users :
+                                   feature.icon === "Clock" ? Clock :
+                                   feature.icon === "Trophy" ? Trophy : Dumbbell
+
               return (
                 <Card key={index} className="text-center border-0 shadow-lg">
                   <CardHeader>
@@ -213,14 +271,14 @@ function HomePageContent() {
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {plans
-              .filter(plan => plan.status === "active")
-              .sort((planA, planB) => planA.price - planB.price)
-              .map((plan) => (
-              <Card 
-                key={plan.id} 
+              .filter((plan: any) => plan.status === "active")
+              .sort((planA: any, planB: any) => planA.price - planB.price)
+              .map((plan: any) => (
+              <Card
+                key={plan.id}
                 className={`border-2 transition-colors ${
-                  plan.popular 
-                    ? "border-red-accent relative" 
+                  plan.popular
+                    ? "border-red-accent relative"
                     : "hover:border-red-accent"
                 }`}
               >
@@ -238,7 +296,7 @@ function HomePageContent() {
                 </CardHeader>
                 <CardContent className="space-y-4 flex flex-col justify-between h-full">
                   <ul className="space-y-2">
-                    {plan.features.map((feature, index) => (
+                    {plan.features.map((feature: string, index: number) => (
                       <li key={index} className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-red-accent" />
                         {feature}
@@ -260,14 +318,14 @@ function HomePageContent() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl md:text-4xl font-bold mb-6">Sobre a {settings.name}</h3>
+              <h3 className="text-3xl md:text-4xl font-bold mb-6">Sobre a {finalSettings.name}</h3>
               <div className="text-lg text-muted-foreground mb-8 text-pretty">
-                {settings.about ? (
-                  <p>{settings.about}</p>
+                {finalSettings.about ? (
+                  <p>{finalSettings.about}</p>
                 ) : (
                   <>
                     <p className="mb-6">
-                      Fundada em 2024, a {settings.name} nasceu com o propósito de revolucionar o conceito de academia. Combinamos
+                      Fundada em 2024, a {finalSettings.name} nasceu com o propósito de revolucionar o conceito de academia. Combinamos
                       tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
                     </p>
                     <p>
@@ -279,15 +337,15 @@ function HomePageContent() {
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.activeMembers || 500}+</div>
+                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.activeMembers || 500}+</div>
                   <div className="text-sm text-muted-foreground">Alunos Ativos</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.personalTrainers || 15}</div>
+                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.personalTrainers || 15}</div>
                   <div className="text-sm text-muted-foreground">Personal Trainers</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.operatingHours || "24/7"}</div>
+                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.operatingHours || "24/7"}</div>
                   <div className="text-sm text-muted-foreground">Funcionamento</div>
                 </div>
               </div>
@@ -314,7 +372,7 @@ function HomePageContent() {
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Veja o que nossos alunos dizem sobre a experiência na {settings.name}
+              Veja o que nossos alunos dizem sobre a experiência na {finalSettings.name}
             </p>
           </div>
 
@@ -338,8 +396,8 @@ function HomePageContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground italic">
-                    "A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados.
-                    Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!"
+                    &ldquo;A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados.
+                    Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!&rdquo;
                   </p>
                 </CardContent>
               </Card>
@@ -361,8 +419,8 @@ function HomePageContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground italic">
-                    "Excelente academia! Os equipamentos são modernos e sempre bem cuidados.
-                    As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente."
+                    &ldquo;Excelente academia! Os equipamentos são modernos e sempre bem cuidados.
+                    As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.&rdquo;
                   </p>
                 </CardContent>
               </Card>
@@ -384,8 +442,8 @@ function HomePageContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground italic">
-                    "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar.
-                    Recomendo para todos que querem mudar de vida através do fitness."
+                    &ldquo;Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar.
+                    Recomendo para todos que querem mudar de vida através do fitness.&rdquo;
                   </p>
                 </CardContent>
               </Card>
@@ -407,8 +465,8 @@ function HomePageContent() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground italic">
-                    "A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador.
-                    Perdi 15kg em 6 meses e me sinto muito mais confiante!"
+                    &ldquo;A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador.
+                    Perdi 15kg em 6 meses e me sinto muito mais confiante!&rdquo;
                   </p>
                 </CardContent>
               </Card>
@@ -444,7 +502,7 @@ function HomePageContent() {
               </CardHeader>
               <CardContent className="px-0 space-y-4">
                 <Suspense fallback={<div className="text-center py-8">Carregando formulário...</div>}>
-                  <HomePageClient settings={settings} plans={plans} />
+                  <HomePageClient settings={finalSettings} plans={plans} />
                 </Suspense>
               </CardContent>
             </Card>
@@ -459,21 +517,21 @@ function HomePageContent() {
                     <MapPin className="h-5 w-5 text-red-accent mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-medium">Endereço</p>
-                      <p className="text-muted-foreground">{settings.address}</p>
+                      <p className="text-muted-foreground">{finalSettings.address}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="h-5 w-5 text-red-accent flex-shrink-0" />
                     <div>
                       <p className="font-medium">Telefone</p>
-                      <p className="text-muted-foreground">{settings.phone}</p>
+                      <p className="text-muted-foreground">{finalSettings.phone}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Mail className="h-5 w-5 text-red-accent flex-shrink-0" />
                     <div>
                       <p className="font-medium">E-mail</p>
-                      <p className="text-muted-foreground">{settings.email}</p>
+                      <p className="text-muted-foreground">{finalSettings.email}</p>
                     </div>
                   </div>
                 </div>
@@ -485,15 +543,15 @@ function HomePageContent() {
                 <div className="space-y-2 text-muted-foreground">
                   <div className="flex justify-between items-center py-1">
                     <span className="font-medium">Segunda a Sexta:</span>
-                    <span>{settings.hours.weekdays.open} - {settings.hours.weekdays.close}</span>
+                    <span>{finalSettings.hours.weekdays.open} - {finalSettings.hours.weekdays.close}</span>
                   </div>
                   <div className="flex justify-between items-center py-1">
                     <span className="font-medium">Sábado:</span>
-                    <span>{settings.hours.saturday.open} - {settings.hours.saturday.close}</span>
+                    <span>{finalSettings.hours.saturday.open} - {finalSettings.hours.saturday.close}</span>
                   </div>
                   <div className="flex justify-between items-center py-1">
                     <span className="font-medium">Domingo:</span>
-                    <span>{settings.hours.sunday.open} - {settings.hours.sunday.close}</span>
+                    <span>{finalSettings.hours.sunday.open} - {finalSettings.hours.sunday.close}</span>
                   </div>
                 </div>
               </div>
@@ -510,7 +568,7 @@ function HomePageContent() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Dumbbell className="h-6 w-6 text-red-accent" />
-                <h5 className="text-xl font-bold">{settings.name.toUpperCase()}</h5>
+                <h5 className="text-xl font-bold">{finalSettings.name.toUpperCase()}</h5>
               </div>
               <p className="text-muted-foreground">Transformando vidas através do fitness desde 2024.</p>
             </div>
@@ -551,27 +609,22 @@ function HomePageContent() {
             <div>
               <h6 className="font-bold mb-4">Contato</h6>
               <ul className="space-y-2 text-muted-foreground">
-                <li>{settings.phone}</li>
-                <li>{settings.email}</li>
-                <li>{settings.address}</li>
+                <li>{finalSettings.phone}</li>
+                <li>{finalSettings.email}</li>
+                <li>{finalSettings.address}</li>
               </ul>
-              <div className="mt-4">
-                <Link href="/login" className="text-red-accent hover:underline text-sm">
-                  Área Restrita do Profissional
-                </Link>
-              </div>
             </div>
           </div>
           <div className="border-t border-muted-foreground/20 mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 {settings.name}. Todos os direitos reservados.</p>
+            <p>&copy; 2024 {finalSettings.name}. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
 
       {/* WhatsApp Button */}
       <WhatsAppButton
-        phoneNumber={settings.whatsapp || "5511999999999"}
-        message={`Olá, gostaria de mais informações sobre a ${settings.name}!`}
+        phoneNumber={finalSettings.whatsapp || "5511999999999"}
+        message={`Olá, gostaria de mais informações sobre a ${finalSettings.name}!`}
       />
       </div>
     </DynamicColorsProvider>
