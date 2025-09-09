@@ -2,6 +2,60 @@
 
 Histórico de versões e mudanças do sistema Black Red Gym.
 
+## [1.0.1] - 2025-09-09
+
+### 🔧 Correções Críticas para Deploy
+
+#### 🐛 **Problemas Corrigidos**
+
+##### **Next.js 15 Compatibilidade**
+- ✅ **APIs corrigidas** para usar `Promise<{ id: string }>` em rotas dinâmicas
+- ✅ **Arquivos afetados:**
+  - `app/api/appointments/[id]/route.ts`
+  - `app/api/messages/[id]/route.ts`
+  - `app/api/plans/[id]/route.ts`
+  - `app/api/testimonials/[id]/route.ts`
+  - `app/api/users/[id]/route.ts`
+
+##### **Configuração de Build Otimizada**
+- ✅ **next.config.mjs** - Verificações de TypeScript e ESLint habilitadas
+- ✅ **package.json** - Script de build separado do Prisma
+- ✅ **Dependências limpas** - Removidas dependências desnecessárias
+
+##### **Prisma para Serverless**
+- ✅ **Cliente Prisma otimizado** para ambientes serverless
+- ✅ **Logs condicionais** baseados no ambiente
+- ✅ **Configuração de datasource** explícita
+
+##### **Deploy na Vercel**
+- ✅ **vercel.json** criado com configurações otimizadas
+- ✅ **Região configurada** para América do Sul (gru1)
+- ✅ **Timeouts de função** configurados (10s)
+- ✅ **Framework Next.js** especificado
+
+##### **Variáveis de Ambiente**
+- ✅ **.env.example** atualizado com todas as variáveis necessárias
+- ✅ **Comentários explicativos** para produção
+- ✅ **Exemplos de URLs** para diferentes ambientes
+
+#### 📊 **Resultado dos Testes**
+```
+✅ Build: Compilação bem-sucedida
+✅ Linting: Verificações ativas e passando
+✅ TypeScript: Sem erros de tipo
+✅ Páginas: 33 páginas geradas com sucesso
+✅ Prisma: Cliente gerado corretamente
+✅ Bundle: 102kB otimizado
+```
+
+#### 🎯 **Impacto**
+- **Deploy na Vercel**: Agora 100% compatível
+- **Performance**: Build mais rápido e confiável
+- **Manutenibilidade**: Código mais limpo e organizado
+- **Segurança**: Verificações de qualidade ativas
+
+---
+
 ## [1.0.0] - 2025-09-08
 
 ### 🎉 Lançamento Inicial

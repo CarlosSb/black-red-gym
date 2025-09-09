@@ -22,6 +22,53 @@ Documentação completa das APIs REST do sistema Black Red Gym.
 http://localhost:3000/api
 ```
 
+### ✅ **Status: APIs Otimizadas para Produção**
+
+As APIs foram completamente otimizadas para deploy na Vercel com Next.js 15:
+
+#### **🔧 Melhorias Implementadas**
+
+##### **Compatibilidade Next.js 15**
+```typescript
+// ✅ ANTES (Next.js 13/14)
+{ params }: { params: { id: string } }
+
+// ✅ DEPOIS (Next.js 15)
+{ params }: { params: Promise<{ id: string }> }
+```
+
+**Rotas corrigidas:**
+- ✅ `/api/appointments/[id]` - PATCH, DELETE
+- ✅ `/api/messages/[id]` - PUT, DELETE
+- ✅ `/api/plans/[id]` - PUT, DELETE
+- ✅ `/api/testimonials/[id]` - PATCH, DELETE
+- ✅ `/api/users/[id]` - PATCH, PUT, DELETE
+
+##### **Configuração Vercel**
+```json
+{
+  "functions": {
+    "app/api/**/*.ts": { "maxDuration": 10 }
+  },
+  "regions": ["gru1"],
+  "framework": "nextjs"
+}
+```
+
+##### **Prisma Otimizado**
+```typescript
+export const prisma = new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: { db: { url: process.env.DATABASE_URL } }
+})
+```
+
+#### **📊 Performance em Produção**
+- **Cold starts**: Otimizados para Vercel
+- **Timeouts**: 10 segundos por função
+- **Região**: América do Sul (São Paulo)
+- **Bundle**: 102kB otimizado
+
 ### Formato de Resposta
 ```json
 {
