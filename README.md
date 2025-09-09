@@ -1,8 +1,8 @@
-# 🏋️‍♂️ Black Red Gym - Sistema de Gestão de Academia
+# 🏋️‍♂️ GymStarter - Sistema de Gestão de Academia
 
 Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScript, Prisma e PostgreSQL. Oferece funcionalidades modernas para alunos, administradores e profissionais da academia.
 
-![Black Red Gym](https://img.shields.io/badge/Black%20Red%20Gym-v1.0.0-red)
+![GymStarter](https://img.shields.io/badge/GymStarter-v1.0.1-red)
 ![Next.js](https://img.shields.io/badge/Next.js-15.0-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-6.15-green)
@@ -132,7 +132,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
 # Database
-DATABASE_URL="postgresql://username:password@localhost:5432/blackred_gym"
+DATABASE_URL="postgresql://username:password@localhost:5432/gymstarter"
 
 # NextAuth.js (opcional)
 NEXTAUTH_SECRET="sua-chave-secreta-super-segura"
@@ -146,7 +146,7 @@ GOOGLE_CLIENT_SECRET="seu-client-secret"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Email Service (opcional)
-EMAIL_FROM="noreply@blackred.com.br"
+EMAIL_FROM="noreply@gymstarter.com.br"
 EMAIL_SMTP_HOST="smtp.gmail.com"
 EMAIL_SMTP_PORT="587"
 EMAIL_SMTP_USER="seu-email@gmail.com"
@@ -473,9 +473,9 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📞 Suporte
 
 Para suporte técnico:
-- 📧 **Email**: suporte@blackred.com.br
+- 📧 **Email**: suporte@gymstarter.com.br
 - 💬 **WhatsApp**: +55 11 99999-9999
-- 📖 **Documentação**: [docs.blackred.com.br](https://docs.blackred.com.br)
+- 📖 **Documentação**: [docs.gymstarter.com.br](https://docs.gymstarter.com.br)
 
 ## 🙏 Agradecimentos
 
@@ -488,9 +488,9 @@ Para suporte técnico:
 ---
 
 <div align="center">
-  <p>Feito com ❤️ pela equipe Black Red Gym</p>
+  <p>Feito com ❤️ pela equipe GymStarter</p>
   <p>
-    <a href="#black-red-gym---sistema-de-gestão-de-academia">
+    <a href="#gymstarter---sistema-de-gestão-de-academia">
       Voltar ao topo
     </a>
   </p>

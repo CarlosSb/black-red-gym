@@ -15,8 +15,8 @@ async function main() {
     where: { email: 'admin@blackredfit.com.br' },
     update: {},
     create: {
-      email: 'admin@blackredfit.com.br',
-      name: 'Administrador BlackRed Fit',
+      email: 'admin@gymstarter.com.br',
+      name: 'Administrador GymStarter',
       password: hashedPassword,
       role: 'ADMIN',
     },
@@ -66,7 +66,7 @@ async function main() {
       name: 'BlackRed Fit',
       description: 'Academia completa especializada em musculação, crossfit, pilates e aulas funcionais. Com equipamentos de última geração, profissionais qualificados e ambiente motivador para alcançar seus objetivos fitness. Localizada no coração de Fortaleza, oferecemos horários estendidos e atendimento personalizado.',
       phone: '(85) 99999-9999',
-      email: 'contato@blackredfit.com.br',
+      email: 'contato@gymstarter.com.br',
       address: 'Av. Santos Dumont, 1515 - Aldeota, Fortaleza - CE, 60150-161',
       whatsapp: '5585999999999',
       hours: {
@@ -401,7 +401,7 @@ async function main() {
   console.log(`   🤝 ${3} indicações`)
   console.log('')
   console.log('🔐 Credenciais de acesso:')
-  console.log('   Admin: admin@blackredfit.com.br / 123456')
+  console.log('   Admin: admin@gymstarter.com.br / 123456')
   console.log('   Aluno: joao.silva@email.com / 123456')
   console.log('   Aluno: maria.santos@email.com / 123456')
   console.log('   Aluno: pedro.costa@email.com / 123456')

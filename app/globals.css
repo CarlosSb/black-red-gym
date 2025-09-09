@@ -10,7 +10,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Customizing primary color to red for Black Red gym branding */
+  /* Customizing primary color to red for GymStarter branding */
   --primary: var(--red-accent, oklch(0.55 0.22 25));
   --primary-foreground: oklch(1 0 0);
   --red-accent: #DC2626;
@@ -42,7 +42,7 @@
 }
 
 .dark {
-  /* Dark mode with black background for Black Red theme */
+  /* Dark mode with black background for GymStarter theme */
   --background: oklch(0.05 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.08 0 0);
@@ -127,7 +127,7 @@
   }
 }
 
-/* Adding custom utility classes for Black Red branding */
+/* Adding custom utility classes for GymStarter branding */
 .bg-black-red {
   background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
 }

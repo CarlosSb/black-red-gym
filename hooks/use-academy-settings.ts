@@ -86,7 +86,7 @@ export function useAcademySettings() {
     name: "BlackRed Fix",
     description: "Academia completa com musculação, crossfit, pilates e aulas funcionais. Equipamentos de última geração, profissionais qualificados e ambiente motivador para alcançar seus objetivos fitness.",
     phone: "(85) 99999-9999",
-    email: "contato@blackredfix.com.br",
+    email: "contato@gymstarter.com.br",
     address: "Av. Santos Dumont, 1515 - Aldeota, Fortaleza - CE, 60150-161",
     whatsapp: "5585999999999",
     hours: {

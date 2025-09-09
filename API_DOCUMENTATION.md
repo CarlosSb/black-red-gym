@@ -1,4 +1,4 @@
-# 📡 Documentação da API - Black Red Gym
+# 📡 Documentação da API - GymStarter
 
 Documentação completa das APIs REST do sistema Black Red Gym.
 
@@ -432,7 +432,7 @@ GET /api/qr/image?code=ABC123
 As APIs administrativas requerem autenticação via cookies:
 
 ```
-blackred_auth=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
+gymstarter_auth=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
 ```
 
 ### Verificação de Admin
@@ -480,11 +480,11 @@ GET /api/users?page=2&limit=20
 # Login
 curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@blackred.com.br","password":"admin123"}'
+  -d '{"email":"admin@gymstarter.com.br","password":"admin123"}'
 
 # Listar usuários (com cookie)
 curl -X GET http://localhost:3000/api/users \
-  -H "Cookie: blackred_auth=TOKEN_AQUI"
+  -H "Cookie: gymstarter_auth=TOKEN_AQUI"
 ```
 
 ### Usando Postman
@@ -507,9 +507,9 @@ curl -X GET http://localhost:3000/api/users \
 ---
 
 <div align="center">
-  <p>📡 <strong>API Black Red Gym</strong> - v1.0.0</p>
+  <p>📡 <strong>API GymStarter</strong> - v1.0.1</p>
   <p>
-    <a href="#-documentação-da-api---black-red-gym">
+    <a href="#-documentação-da-api---gymstarter">
       Voltar ao topo
     </a>
   </p>

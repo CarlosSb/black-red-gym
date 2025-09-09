@@ -7,7 +7,7 @@ import { cookies } from "next/headers"
 async function verifyAdmin() {
   try {
     const cookieStore = await cookies()
-    const authCookie = cookieStore.get("blackred_auth")
+    const authCookie = cookieStore.get("gymstarter_auth")
 
     if (!authCookie) {
       return null

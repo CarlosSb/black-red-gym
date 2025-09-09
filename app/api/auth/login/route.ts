@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Set HTTP cookie for authentication
     const cookieStore = await cookies()
-    cookieStore.set('blackred_auth', JSON.stringify(user), {
+    cookieStore.set('gymstarter_auth', JSON.stringify(user), {
       httpOnly: false, // Allow client-side access
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

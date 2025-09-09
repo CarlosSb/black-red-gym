@@ -5,7 +5,7 @@ export async function POST() {
   try {
     // Clear the authentication cookie
     const cookieStore = await cookies()
-    cookieStore.delete('blackred_auth')
+    cookieStore.delete('gymstarter_auth')
 
     return NextResponse.json({ success: true, message: 'Logout realizado com sucesso' })
   } catch (error) {

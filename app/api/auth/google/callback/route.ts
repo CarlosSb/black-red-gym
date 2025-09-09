@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     )
 
     // Set session cookie
-    response.cookies.set("blackred_auth", JSON.stringify(userData), {
+    response.cookies.set("gymstarter_auth", JSON.stringify(userData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

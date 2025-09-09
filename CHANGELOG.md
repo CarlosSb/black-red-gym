@@ -1,4 +1,4 @@
-# 📋 Changelog - Black Red Gym
+# 📋 Changelog - GymStarter
 
 Histórico de versões e mudanças do sistema Black Red Gym.
 
@@ -195,6 +195,6 @@ Para contribuir com o desenvolvimento:
 ---
 
 <div align="center">
-  <p>📋 <strong>Changelog Black Red Gym</strong></p>
+  <p>📋 <strong>Changelog GymStarter</strong></p>
   <p>Mantenha-se atualizado com as últimas mudanças!</p>
 </div>

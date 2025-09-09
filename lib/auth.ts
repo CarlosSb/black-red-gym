@@ -13,7 +13,7 @@ export interface AuthState {
 }
 
 export class AuthService {
-  private static readonly COOKIE_NAME = "blackred_auth"
+  private static readonly COOKIE_NAME = "gymstarter_auth"
 
   static getStoredAuth(): AuthState {
     if (typeof window === "undefined") {
