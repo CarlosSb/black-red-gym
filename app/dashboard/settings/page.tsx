@@ -342,46 +342,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* About Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5" />
-              Sobre a Academia
-            </CardTitle>
-            <CardDescription>Texto que aparece na seção "sobre" do site</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="about">Descrição sobre a academia</Label>
-              <Textarea
-                id="about"
-                value={settings.about || ""}
-                onChange={(e) => setSettings({ ...settings, about: e.target.value })}
-                rows={6}
-                placeholder="Conte a história da academia, missão, valores..."
-              />
-            </div>
-
-            <Button
-              onClick={handleSaveAbout}
-              className="bg-red-accent hover:bg-red-accent/90"
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Salvar Sobre
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Hero Section */}
         <Card>

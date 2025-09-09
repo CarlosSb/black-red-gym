@@ -1,26 +1,33 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Dumbbell, LayoutDashboard, CreditCard, MessageSquare, Settings, LogOut, Menu, X } from "lucide-react"
+import { Dumbbell, LayoutDashboard, CreditCard, MessageSquare, Settings, LogOut, Menu, X, Calendar, Info } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Agendamentos", href: "/dashboard/appointments", icon: Calendar },
   { name: "Planos", href: "/dashboard/plans", icon: CreditCard },
   { name: "Mensagens", href: "/dashboard/messages", icon: MessageSquare },
+  { name: "Sobre", href: "/dashboard/about", icon: Info },
   { name: "Configurações", href: "/dashboard/settings", icon: Settings },
 ]
 
 export function DashboardSidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogout = () => {
     logout()
@@ -85,6 +92,10 @@ export function DashboardSidebar() {
       </div>
     </div>
   )
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <>

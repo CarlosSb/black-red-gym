@@ -7,6 +7,7 @@ import { AuthService, type AuthState } from "@/lib/auth"
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  loginWithGoogle: (action?: "login" | "register") => void
   logout: () => void
 }
 
@@ -25,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthState({ ...stored, isLoading: false })
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, redirectTo?: string) => {
     setAuthState((prev) => ({ ...prev, isLoading: true }))
 
     const result = await AuthService.login(email, password)
@@ -36,6 +37,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: true,
         isLoading: false,
       })
+
+      // Redirecionamento baseado no tipo de usuário
+      if (typeof window !== 'undefined') {
+        const router = (await import('next/navigation')).redirect
+
+        if (redirectTo) {
+          // Se foi especificado um redirecionamento, usar ele
+          window.location.href = redirectTo
+        } else {
+          // Redirecionamento automático baseado no tipo de usuário
+          if (result.user.role === 'ADMIN') {
+            window.location.href = '/dashboard'
+          } else if (result.user.role === 'USER') {
+            window.location.href = '/student/dashboard'
+          } else {
+            window.location.href = '/'
+          }
+        }
+      }
+
       return { success: true }
     } else {
       setAuthState((prev) => ({ ...prev, isLoading: false }))
@@ -61,6 +82,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const loginWithGoogle = (action: "login" | "register" = "login") => {
+    window.location.href = `/api/auth/google?action=${action}`
+  }
+
   const logout = () => {
     AuthService.logout()
     setAuthState({
@@ -76,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ...authState,
         login,
         register,
+        loginWithGoogle,
         logout,
       }}
     >

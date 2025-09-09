@@ -32,11 +32,10 @@ export default function LoginPage() {
 
     const result = await login(email, password)
 
-    if (result.success) {
-      router.push("/dashboard")
-    } else {
+    if (!result.success) {
       setError(result.error || "Erro ao fazer login")
     }
+    // Redirecionamento será feito automaticamente pelo contexto de autenticação
   }
 
   return (

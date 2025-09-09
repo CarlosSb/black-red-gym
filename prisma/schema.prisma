@@ -43,13 +43,14 @@ model Message {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String     @id @default(cuid())
+  email     String     @unique
   name      String
-  password  String   // Hashed password
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  password  String     // Hashed password
+  role      UserRole   @default(USER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("users")
 }
@@ -97,4 +98,100 @@ enum Priority {
 enum UserRole {
   USER
   ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  BANNED
+  PENDING
+}
+
+model CheckinCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  validDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  checkIns CheckIn[]
+
+  @@map("checkin_codes")
+}
+
+model CheckIn {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  checkInTime DateTime @default(now())
+  status      CheckInStatus @default(ACTIVE)
+  codeId      String?
+  code        CheckinCode? @relation(fields: [codeId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("check_ins")
+}
+
+enum CheckInStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  email       String
+  classType   String   // Tipo de aula (Musculação, Crossfit, etc.)
+  scheduledDate DateTime
+  scheduledTime String  // Horário formatado (HH:MM)
+  status      AppointmentStatus @default(PENDING)
+  notes       String?  // Observações adicionais
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Referral {
+  id          String   @id @default(cuid())
+  referrerName String  // Nome do aluno que indica
+  referrerPhone String // Telefone do aluno que indica
+  referredName String  // Nome do indicado
+  referredPhone String // Telefone do indicado
+  referredEmail String? // E-mail do indicado (opcional)
+  status      ReferralStatus @default(PENDING)
+  notes       String?  // Observações
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("referrals")
+}
+
+enum ReferralStatus {
+  PENDING
+  CONTACTED
+  CONVERTED
+  CANCELLED
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  content   String
+  rating    Int      @default(5) // 1-5 stars
+  image     String?  // Avatar image URL or initials
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("testimonials")
 }

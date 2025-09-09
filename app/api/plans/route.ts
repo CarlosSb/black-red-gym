@@ -51,7 +51,27 @@ export async function GET() {
         orderBy: { createdAt: 'asc' }
       })
 
-      return NextResponse.json(createdPlans.map(plan => ({
+      return NextResponse.json({
+        success: true,
+        plans: createdPlans.map(plan => ({
+          id: plan.id,
+          name: plan.name,
+          price: plan.price,
+          description: plan.description,
+          features: plan.features,
+          activeMembers: plan.activeMembers,
+          monthlyRevenue: plan.monthlyRevenue,
+          status: plan.status.toLowerCase() as "active" | "inactive",
+          popular: plan.popular,
+          createdAt: plan.createdAt.toISOString(),
+          updatedAt: plan.updatedAt.toISOString(),
+        }))
+      })
+    }
+
+    return NextResponse.json({
+      success: true,
+      plans: plans.map(plan => ({
         id: plan.id,
         name: plan.name,
         price: plan.price,
@@ -63,22 +83,8 @@ export async function GET() {
         popular: plan.popular,
         createdAt: plan.createdAt.toISOString(),
         updatedAt: plan.updatedAt.toISOString(),
-      })))
-    }
-
-    return NextResponse.json(plans.map(plan => ({
-      id: plan.id,
-      name: plan.name,
-      price: plan.price,
-      description: plan.description,
-      features: plan.features,
-      activeMembers: plan.activeMembers,
-      monthlyRevenue: plan.monthlyRevenue,
-      status: plan.status.toLowerCase() as "active" | "inactive",
-      popular: plan.popular,
-      createdAt: plan.createdAt.toISOString(),
-      updatedAt: plan.updatedAt.toISOString(),
-    })))
+      }))
+    })
   } catch (error) {
     console.error('Error fetching plans:', error)
     return NextResponse.json({ error: 'Failed to fetch plans' }, { status: 500 })

@@ -143,3 +143,28 @@
 .bg-red-accent {
   background-color: oklch(0.6 0.25 25);
 }
+
+/* Carousel Animation */
+@keyframes carousel {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+.animate-carousel {
+  animation: carousel 20s linear infinite;
+}
+
+.animate-carousel:hover {
+  animation-play-state: paused;
+}
+
+/* Pause animation on mobile for better UX */
+@media (max-width: 768px) {
+  .animate-carousel {
+    animation: none;
+  }
+}

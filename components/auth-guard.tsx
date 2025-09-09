@@ -23,7 +23,7 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
         return
       }
 
-      if (requireAdmin && user?.role !== "admin") {
+      if (requireAdmin && user?.role !== "ADMIN") {
         router.push("/dashboard")
         return
       }
@@ -45,7 +45,7 @@ export function AuthGuard({ children, requireAdmin = false }: AuthGuardProps) {
     return null
   }
 
-  if (requireAdmin && user?.role !== "admin") {
+  if (requireAdmin && user?.role !== "ADMIN") {
     return null
   }
 

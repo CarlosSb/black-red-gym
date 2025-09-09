@@ -81,7 +81,8 @@ class DataService {
       if (!response.ok) {
         throw new Error('Failed to fetch plans')
       }
-      return await response.json()
+      const data = await response.json()
+      return data.plans || []
     } catch (error) {
       console.error("Error reading plans:", error)
       return []

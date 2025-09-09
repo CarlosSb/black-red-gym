@@ -58,21 +58,15 @@ export default function PlansPage() {
     }
   }
 
-  const totalRevenue = plans.reduce((sum, plan) => sum + plan.monthlyRevenue, 0)
-  const totalMembers = plans.reduce((sum, plan) => sum + plan.activeMembers, 0)
+  const totalRevenue = Array.isArray(plans) ? plans.reduce((sum, plan) => sum + plan.monthlyRevenue, 0) : 0
+  const totalMembers = Array.isArray(plans) ? plans.reduce((sum, plan) => sum + plan.activeMembers, 0) : 0
 
   return (
     <div className="p-6 lg:p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Gerenciar Planos</h1>
-          <p className="text-muted-foreground">Configure e monitore os planos de assinatura da academia</p>
-        </div>
-        <Button onClick={handleCreatePlan} className="bg-red-accent hover:bg-red-accent/90 mt-4 sm:mt-0">
-          <Plus className="mr-2 h-4 w-4" />
-          Novo Plano
-        </Button>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Gerenciar Planos</h1>
+        <p className="text-muted-foreground">Configure e monitore os planos de assinatura da academia</p>
       </div>
 
       {/* Summary Stats */}
@@ -105,9 +99,9 @@ export default function PlansPage() {
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{plans.find((p) => p.popular)?.name || "Nenhum"}</div>
+            <div className="text-2xl font-bold">{Array.isArray(plans) ? (plans.find((p) => p.popular)?.name || "Nenhum") : "Nenhum"}</div>
             <p className="text-xs text-muted-foreground">
-              {plans.find((p) => p.popular)?.activeMembers || 0} membros ativos
+              {Array.isArray(plans) ? (plans.find((p) => p.popular)?.activeMembers || 0) : 0} membros ativos
             </p>
           </CardContent>
         </Card>
@@ -135,7 +129,7 @@ export default function PlansPage() {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex flex-col justify-between h-full">
               {/* Features */}
               <div>
                 <h4 className="font-medium mb-2">Recursos inclusos:</h4>
@@ -190,6 +184,14 @@ export default function PlansPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Add Plan Button at Bottom */}
+      <div className="flex justify-center mt-8">
+        <Button onClick={handleCreatePlan} className="bg-red-accent hover:bg-red-accent/90 px-8 py-3">
+          <Plus className="mr-2 h-5 w-5" />
+          Novo Plano
+        </Button>
       </div>
 
       <PlanModal

@@ -1,20 +1,38 @@
+"use client"
+
 import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail } from "lucide-react"
+import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { getServerSettings, getServerPlans } from "@/lib/server-data"
 import { MobileMenu } from "@/components/mobile-menu"
 import { HomePageClient } from "@/components/home-page-client"
 import { DynamicColorsProvider } from "@/components/dynamic-colors-provider"
 import { MatriculeSeButton } from "@/components/matricule-se-button"
+import { CheckInModal } from "@/components/checkin-modal"
+import { WhatsAppButton } from "@/components/whatsapp-button"
+import { AppointmentModal } from "@/components/appointment-modal"
+import { PlanSelectionModal } from "@/components/plan-selection-modal"
+import { useAcademySettings } from "@/hooks/use-academy-settings"
+import { usePlans } from "@/hooks/use-plans"
 
-export default async function HomePage() {
-  const [settings, plans] = await Promise.all([
-    getServerSettings(),
-    getServerPlans()
-  ])
+function HomePageContent() {
+  const { settings, isLoading: settingsLoading } = useAcademySettings()
+  const { plans, isLoading: plansLoading } = usePlans()
+
+  const isLoading = settingsLoading || plansLoading
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-red-accent" />
+          <p className="text-muted-foreground">Carregando...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <DynamicColorsProvider settings={settings}>
@@ -28,7 +46,7 @@ export default async function HomePage() {
             ) : (
               <Dumbbell className="h-8 w-8 text-red-accent" />
             )}
-            <h1 className="text-2xl font-bold">{settings.name.toUpperCase()}</h1>
+            <h1 className="text-2xl font-bold">{settings.name?.toUpperCase() || "ACADEMIA"}</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#inicio" className="hover:text-red-accent transition-colors">
@@ -46,12 +64,12 @@ export default async function HomePage() {
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/login">
+              <Link href="/student/login">
                 <Button
                   variant="outline"
                   className="border-red-accent text-red-accent hover:bg-red-accent hover:text-white bg-transparent"
                 >
-                  Login
+                  Área do Aluno
                 </Button>
               </Link>
               <Link href="/register">
@@ -73,13 +91,33 @@ export default async function HomePage() {
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto text-pretty">
             {settings.description}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          {/* Botões na parte inferior */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
             <MatriculeSeButton
               settings={settings}
               className="bg-red-accent hover:bg-red-accent/90 text-white"
             >
               Matricule-se
             </MatriculeSeButton>
+            <CheckInModal>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+              >
+                Fazer Check-in
+              </Button>
+            </CheckInModal>
+            <AppointmentModal>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+              >
+                Agendar Aula Experimental
+              </Button>
+            </AppointmentModal>
             <Button
               size="lg"
               variant="outline"
@@ -95,7 +133,7 @@ export default async function HomePage() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || "Por que escolher a Black Red?"}</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || `Por que escolher a ${settings.name}?`}</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               {settings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
@@ -162,6 +200,8 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+
       {/* Plans */}
       <section id="planos" className="py-20">
         <div className="container mx-auto px-4">
@@ -196,7 +236,7 @@ export default async function HomePage() {
                     R$ {plan.price}<span className="text-lg text-muted-foreground">/mês</span>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 flex flex-col justify-between h-full">
                   <ul className="space-y-2">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
@@ -205,7 +245,9 @@ export default async function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
+                  <PlanSelectionModal plan={plan}>
+                    <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
+                  </PlanSelectionModal>
                 </CardContent>
               </Card>
             ))}
@@ -225,7 +267,7 @@ export default async function HomePage() {
                 ) : (
                   <>
                     <p className="mb-6">
-                      Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos
+                      Fundada em 2024, a {settings.name} nasceu com o propósito de revolucionar o conceito de academia. Combinamos
                       tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
                     </p>
                     <p>
@@ -266,6 +308,122 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials Carousel */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h3>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Veja o que nossos alunos dizem sobre a experiência na {settings.name}
+            </p>
+          </div>
+
+          {/* Carousel Container */}
+          <div className="relative overflow-hidden">
+            <div className="flex gap-8 animate-carousel">
+              {/* Testimonial 1 */}
+              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">JS</span>
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg">João Silva</CardTitle>
+                  <div className="flex justify-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados.
+                    Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!"
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 2 */}
+              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">MS</span>
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg">Maria Santos</CardTitle>
+                  <div className="flex justify-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "Excelente academia! Os equipamentos são modernos e sempre bem cuidados.
+                    As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente."
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 3 */}
+              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">PC</span>
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg">Pedro Costa</CardTitle>
+                  <div className="flex justify-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar.
+                    Recomendo para todos que querem mudar de vida através do fitness."
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Testimonial 4 (Duplicate for seamless loop) */}
+              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
+                <CardHeader>
+                  <div className="flex justify-center mb-4">
+                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">JS</span>
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg">João Silva</CardTitle>
+                  <div className="flex justify-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador.
+                    Perdi 15kg em 6 meses e me sinto muito mais confiante!"
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Carousel Navigation Dots */}
+          <div className="flex justify-center mt-8 gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-accent"></div>
+            <div className="w-3 h-3 rounded-full bg-muted-foreground/30"></div>
+            <div className="w-3 h-3 rounded-full bg-muted-foreground/30"></div>
+          </div>
+        </div>
+      </section>
+
       {/* Contact */}
       <section id="contato" className="py-20">
         <div className="container mx-auto px-4">
@@ -275,39 +433,44 @@ export default async function HomePage() {
               Tire suas dúvidas ou agende uma visita. Estamos aqui para te ajudar!
             </p>
           </div>
-          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <Card className="p-8">
+
+          {/* Layout responsivo: 2 colunas em desktop, stacked em mobile */}
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
+            {/* Formulário de Contato */}
+            <Card className="p-6 lg:p-8 order-1">
               <CardHeader className="px-0 pt-0">
-                <CardTitle>Envie uma Mensagem</CardTitle>
-                <CardDescription>Responderemos em até 24 horas</CardDescription>
+                <CardTitle className="text-xl lg:text-2xl">Envie uma Mensagem</CardTitle>
+                <CardDescription className="text-base">Responderemos em até 24 horas</CardDescription>
               </CardHeader>
               <CardContent className="px-0 space-y-4">
-                <Suspense fallback={<div>Carregando formulário...</div>}>
+                <Suspense fallback={<div className="text-center py-8">Carregando formulário...</div>}>
                   <HomePageClient settings={settings} plans={plans} />
                 </Suspense>
               </CardContent>
             </Card>
 
-            <div className="space-y-8">
+            {/* Informações de Contato */}
+            <div className="space-y-8 order-2">
+              {/* Informações de Contato */}
               <div>
                 <h4 className="text-xl font-bold mb-6">Informações de Contato</h4>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-red-accent" />
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 text-red-accent mt-1 flex-shrink-0" />
                     <div>
                       <p className="font-medium">Endereço</p>
                       <p className="text-muted-foreground">{settings.address}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-red-accent" />
+                    <Phone className="h-5 w-5 text-red-accent flex-shrink-0" />
                     <div>
                       <p className="font-medium">Telefone</p>
                       <p className="text-muted-foreground">{settings.phone}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-red-accent" />
+                    <Mail className="h-5 w-5 text-red-accent flex-shrink-0" />
                     <div>
                       <p className="font-medium">E-mail</p>
                       <p className="text-muted-foreground">{settings.email}</p>
@@ -316,23 +479,25 @@ export default async function HomePage() {
                 </div>
               </div>
 
+              {/* Horários de Funcionamento */}
               <div>
                 <h4 className="text-xl font-bold mb-4">Horários de Funcionamento</h4>
                 <div className="space-y-2 text-muted-foreground">
-                  <div className="flex justify-between">
-                    <span>Segunda a Sexta:</span>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="font-medium">Segunda a Sexta:</span>
                     <span>{settings.hours.weekdays.open} - {settings.hours.weekdays.close}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Sábado:</span>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="font-medium">Sábado:</span>
                     <span>{settings.hours.saturday.open} - {settings.hours.saturday.close}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Domingo:</span>
+                  <div className="flex justify-between items-center py-1">
+                    <span className="font-medium">Domingo:</span>
                     <span>{settings.hours.sunday.open} - {settings.hours.sunday.close}</span>
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
@@ -390,6 +555,11 @@ export default async function HomePage() {
                 <li>{settings.email}</li>
                 <li>{settings.address}</li>
               </ul>
+              <div className="mt-4">
+                <Link href="/login" className="text-red-accent hover:underline text-sm">
+                  Área Restrita do Profissional
+                </Link>
+              </div>
             </div>
           </div>
           <div className="border-t border-muted-foreground/20 mt-8 pt-8 text-center text-muted-foreground">
@@ -397,7 +567,17 @@ export default async function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* WhatsApp Button */}
+      <WhatsAppButton
+        phoneNumber={settings.whatsapp || "5511999999999"}
+        message={`Olá, gostaria de mais informações sobre a ${settings.name}!`}
+      />
       </div>
     </DynamicColorsProvider>
   )
+}
+
+export default function HomePage() {
+  return <HomePageContent />
 }
