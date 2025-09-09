@@ -35,7 +35,7 @@ async function verifyAdmin() {
 // PATCH /api/users/[id] - Atualizar usuário (apenas admin)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar se o usuário é admin
@@ -47,7 +47,8 @@ export async function PATCH(
       )
     }
 
-    const userId = params.id
+    const { id } = await params
+    const userId = id
     const body = await request.json()
     const { status, name, email, password, role } = body
 
@@ -190,7 +191,7 @@ export async function PATCH(
 // PUT /api/users/[id] - Atualizar usuário (apenas admin)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar se o usuário é admin
@@ -202,7 +203,8 @@ export async function PUT(
       )
     }
 
-    const userId = params.id
+    const { id } = await params
+    const userId = id
     const { name, email, role, currentPassword, newPassword } = await request.json()
 
     // Verificar se o usuário existe
@@ -315,7 +317,7 @@ export async function PUT(
 // DELETE /api/users/[id] - Excluir usuário (apenas admin)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar se o usuário é admin
@@ -327,7 +329,8 @@ export async function DELETE(
       )
     }
 
-    const userId = params.id
+    const { id } = await params
+    const userId = id
 
     // Verificar se o usuário existe
     const existingUser = await prisma.user.findUnique({

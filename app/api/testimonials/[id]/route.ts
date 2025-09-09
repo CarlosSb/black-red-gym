@@ -26,7 +26,7 @@ async function verifyAdmin() {
 // PATCH /api/testimonials/[id] - Atualizar depoimento (apenas admin)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar se o usuário é admin
@@ -38,7 +38,8 @@ export async function PATCH(
       )
     }
 
-    const testimonialId = params.id
+    const { id } = await params
+    const testimonialId = id
     const { isActive } = await request.json()
 
     // Validações
@@ -87,7 +88,7 @@ export async function PATCH(
 // DELETE /api/testimonials/[id] - Excluir depoimento (apenas admin)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar se o usuário é admin
@@ -99,7 +100,8 @@ export async function DELETE(
       )
     }
 
-    const testimonialId = params.id
+    const { id } = await params
+    const testimonialId = id
 
     // Verificar se o depoimento existe
     const existingTestimonial = await prisma.testimonial.findUnique({
