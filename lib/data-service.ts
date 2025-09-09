@@ -71,6 +71,9 @@ export type AcademySettingsData = {
     operatingHours: string
     foundedYear: number
   }
+  assistantEnabled?: boolean
+  assistantDelay?: number
+  assistantWelcomeMessage?: string
 }
 
 class DataService {

@@ -73,6 +73,9 @@ model AcademySettings {
   heroImage   String?  // Hero section image
   features    Json?    // Store features as JSON
   metrics     Json?    // Store academy metrics as JSON
+  assistantEnabled Boolean @default(true) // Enable/disable AI assistant
+  assistantDelay Int @default(5000) // Delay in ms before showing assistant
+  assistantWelcomeMessage String? // Custom welcome message
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -194,4 +197,15 @@ model Testimonial {
   updatedAt DateTime @updatedAt
 
   @@map("testimonials")
+}
+
+model KnowledgeBase {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  category  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("knowledge_bases")
 }

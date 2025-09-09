@@ -9,7 +9,7 @@ import { HomePageClient } from "@/components/home-page-client"
 import { DynamicColorsProvider } from "@/components/dynamic-colors-provider"
 import { MatriculeSeButton } from "@/components/matricule-se-button"
 import { CheckInModal } from "@/components/checkin-modal"
-import { WhatsAppButton } from "@/components/whatsapp-button"
+import { ChatFlutuante } from "@/components/chat-flutuante"
 import { AppointmentModal } from "@/components/appointment-modal"
 import { PlanSelectionModal } from "@/components/plan-selection-modal"
 
@@ -240,7 +240,7 @@ async function HomePageContent() {
                     <CardTitle>Horário Flexível</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Aberto das {settings.hours.weekdays.open} às {settings.hours.weekdays.close} para se adequar à sua rotina</p>
+                    <p className="text-muted-foreground">Aberto das {finalSettings.hours.weekdays.open} às {finalSettings.hours.weekdays.close} para se adequar à sua rotina</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center border-0 shadow-lg">
@@ -621,11 +621,7 @@ async function HomePageContent() {
         </div>
       </footer>
 
-      {/* WhatsApp Button */}
-      <WhatsAppButton
-        phoneNumber={finalSettings.whatsapp || "5511999999999"}
-        message={`Olá, gostaria de mais informações sobre a ${finalSettings.name}!`}
-      />
+      <ChatFlutuante />
       </div>
     </DynamicColorsProvider>
   )

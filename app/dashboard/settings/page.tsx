@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Image, Star, Plus, Trash2 } from "lucide-react"
+import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Image, Star, Plus, Trash2, Bot } from "lucide-react"
 import DataService, { type AcademySettingsData } from "@/lib/data-service"
 
 export default function SettingsPage() {
@@ -160,6 +160,24 @@ export default function SettingsPage() {
       setSettings(updatedSettings)
     } catch (error) {
       console.error("Error saving metrics:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleSaveAssistant = async () => {
+    if (!settings) return
+
+    setIsSaving(true)
+    try {
+      const updatedSettings = await DataService.updateSettings({
+        assistantEnabled: settings.assistantEnabled,
+        assistantDelay: settings.assistantDelay,
+        assistantWelcomeMessage: settings.assistantWelcomeMessage,
+      })
+      setSettings(updatedSettings)
+    } catch (error) {
+      console.error("Error saving assistant settings:", error)
     } finally {
       setIsSaving(false)
     }
@@ -946,6 +964,89 @@ export default function SettingsPage() {
                 <>
                   <Save className="mr-2 h-4 w-4" />
                   Salvar Aparência
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Assistant Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              Assistente Virtual
+            </CardTitle>
+            <CardDescription>Configure o comportamento do assistente AI</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Assistente Ativado</Label>
+                  <p className="text-sm text-muted-foreground">Ativar/desativar o assistente virtual na landing page</p>
+                </div>
+                <Switch
+                  checked={settings.assistantEnabled ?? true}
+                  onCheckedChange={(checked) =>
+                    setSettings({
+                      ...settings,
+                      assistantEnabled: checked,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="assistant-delay">Atraso de Exibição (segundos)</Label>
+                <Input
+                  id="assistant-delay"
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={(settings.assistantDelay ?? 5000) / 1000}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    assistantDelay: parseInt(e.target.value) * 1000 || 5000
+                  })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Tempo em segundos antes do assistente aparecer na página
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="assistant-welcome">Mensagem de Boas-vindas</Label>
+                <Textarea
+                  id="assistant-welcome"
+                  value={settings.assistantWelcomeMessage || ""}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    assistantWelcomeMessage: e.target.value
+                  })}
+                  rows={2}
+                  placeholder="Olá! Como posso ajudar com sua dúvida sobre a academia?"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Mensagem personalizada que o assistente mostra ao iniciar uma conversa
+                </p>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleSaveAssistant}
+              className="bg-red-accent hover:bg-red-accent/90"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar Configurações do Assistente
                 </>
               )}
             </Button>

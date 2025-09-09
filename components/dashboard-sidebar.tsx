@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Dumbbell, LayoutDashboard, CreditCard, MessageSquare, Settings, LogOut, Menu, X, Calendar, Info } from "lucide-react"
+import { Dumbbell, LayoutDashboard, CreditCard, MessageSquare, Settings, LogOut, Menu, X, Calendar, Info, Bot } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +14,7 @@ const navigation = [
   { name: "Agendamentos", href: "/dashboard/appointments", icon: Calendar },
   { name: "Planos", href: "/dashboard/plans", icon: CreditCard },
   { name: "Mensagens", href: "/dashboard/messages", icon: MessageSquare },
+  { name: "Assistente AI", href: "/dashboard/knowledge", icon: Bot },
   { name: "Sobre", href: "/dashboard/about", icon: Info },
   { name: "Configurações", href: "/dashboard/settings", icon: Settings },
 ]
