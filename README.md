@@ -88,8 +88,8 @@ Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScri
 
 1. **Clone o repositório:**
    ```bash
-   git clone https://github.com/seu-usuario/black-red-gym.git
-   cd black-red-gym
+   git clone https://github.com/seu-usuario/gym-starter.git
+   cd gym-starter
    ```
 
 2. **Instale as dependências:**
@@ -191,7 +191,7 @@ npm run test:coverage # Relatório de cobertura
 ## 📁 Estrutura do Projeto
 
 ```
-black-red-gym/
+gym-starter/
 ├── app/                          # Next.js App Router
 │   ├── (auth)/                   # Rotas de autenticação
 │   ├── api/                      # API Routes
