@@ -2,122 +2,33 @@ import { Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail, Loader2 } from "lucide-react"
+import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail } from "lucide-react"
 import Link from "next/link"
+import { getServerSettings, getServerPlans } from "@/lib/server-data"
 import { MobileMenu } from "@/components/mobile-menu"
 import { HomePageClient } from "@/components/home-page-client"
 import { DynamicColorsProvider } from "@/components/dynamic-colors-provider"
 import { MatriculeSeButton } from "@/components/matricule-se-button"
-import { CheckInModal } from "@/components/checkin-modal"
-import { ChatFlutuante } from "@/components/chat-flutuante"
-import { AppointmentModal } from "@/components/appointment-modal"
-import { PlanSelectionModal } from "@/components/plan-selection-modal"
-import { UnifiedContentSection } from "@/components/unified-content-section"
-import { AdsBanner } from "@/components/ads-banner"
-import { TestimonialCard } from "@/components/ui/testimonial-card"
-import { TestimonialsCarousel } from "@/components/testimonials-carousel"
-import { useTestimonials } from "@/hooks/use-testimonials"
 
-async function HomePageContent() {
-  // Fetch settings from API
-  const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/settings`, {
-    cache: 'no-store' // Ensure fresh data for SSR
-  })
-  const settingsData = await settingsResponse.json()
-  const settings = settingsData.success ? settingsData.settings : null
-
-  // Fetch plans from API
-  const plansResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/plans`, {
-    cache: 'no-store'
-  })
-  const plansData = await plansResponse.json()
-  const plans = plansData.success ? plansData.plans : []
-
-  // Fetch testimonials from API
-  const testimonialsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/testimonials?active=true&limit=10`, {
-    cache: 'no-store'
-  })
-  const testimonialsData = await testimonialsResponse.json()
-  const testimonials = testimonialsData.success ? testimonialsData.testimonials : []
-
-  // Fallback settings if API fails
-  const defaultSettings = {
-    name: "Gym Starter",
-    description: "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
-    phone: "(11) 99999-9999",
-    email: "contato@gymstarter.com.br",
-    address: "Rua das Academias, 123 - Centro",
-    whatsapp: "5511999999999",
-    hours: {
-      weekdays: { open: "05:00", close: "23:00" },
-      saturday: { open: "06:00", close: "20:00" },
-      sunday: { open: "08:00", close: "18:00" }
-    },
-    colors: {
-      primary: "#DC2626",
-      secondary: "#000000",
-      accent: "#DC2626"
-    },
-    notifications: {
-      newMessages: true,
-      newMembers: true,
-      payments: true,
-      weeklyReports: false
-    },
-    logo: "/placeholder-logo.png",
-    about: "Fundada em 2024, a Gym Starter nasceu com o propósito de revolucionar o conceito de academia. Combinamos tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino. Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos, seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.",
-    heroTitle: "TRANSFORME SEU CORPO",
-    heroSubtitle: "Nova Academia",
-    heroImage: "/modern-gym-interior-with-red-and-black-equipment.jpg",
-    features: {
-      title: "Por que escolher a Gym Starter?",
-      description: "Oferecemos tudo que você precisa para alcançar seus objetivos fitness",
-      items: [
-        {
-          icon: "Dumbbell",
-          title: "Equipamentos Modernos",
-          description: "Equipamentos de última geração para todos os tipos de treino"
-        },
-        {
-          icon: "Users",
-          title: "Personal Trainers",
-          description: "Profissionais qualificados para te orientar em cada exercício"
-        },
-        {
-          icon: "Clock",
-          title: "Horário Flexível",
-          description: "Aberto das 05:00 às 23:00 para se adequar à sua rotina"
-        },
-        {
-          icon: "Trophy",
-          title: "Resultados Garantidos",
-          description: "Metodologia comprovada para alcançar seus objetivos"
-        }
-      ]
-    },
-    metrics: {
-      activeMembers: 500,
-      personalTrainers: 15,
-      operatingHours: "24/7",
-      foundedYear: 2024
-    }
-  }
-
-  const finalSettings = settings || defaultSettings
+export default async function HomePage() {
+  const [settings, plans] = await Promise.all([
+    getServerSettings(),
+    getServerPlans()
+  ])
 
   return (
-    <DynamicColorsProvider settings={finalSettings}>
+    <DynamicColorsProvider settings={settings}>
       <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-black-red text-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {finalSettings.logo ? (
-              <img src={finalSettings.logo} alt="Logo" className="h-8 w-8 object-contain" />
+            {settings.logo ? (
+              <img src={settings.logo} alt="Logo" className="h-8 w-8 object-contain" />
             ) : (
               <Dumbbell className="h-8 w-8 text-red-accent" />
             )}
-            <h1 className="text-2xl font-bold">{finalSettings.name?.toUpperCase() || "ACADEMIA"}</h1>
+            <h1 className="text-2xl font-bold">{settings.name.toUpperCase()}</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#inicio" className="hover:text-red-accent transition-colors">
@@ -135,6 +46,12 @@ async function HomePageContent() {
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden md:flex items-center gap-2">
+              <MatriculeSeButton
+                settings={settings}
+                className="bg-red-accent hover:bg-red-accent/90 text-white"
+              >
+                Matricule-se
+              </MatriculeSeButton>
               <Link href="/login">
                 <Button
                   variant="outline"
@@ -143,83 +60,59 @@ async function HomePageContent() {
                   Login
                 </Button>
               </Link>
-              <Link href="/register">
-                <Button className="bg-red-accent hover:bg-red-accent/90">Matricule-se</Button>
-              </Link>
             </div>
-            <MobileMenu settings={finalSettings} />
+            <MobileMenu settings={settings} />
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section id="inicio" className="bg-black-red text-white py-20" aria-labelledby="hero-title">
+      <section id="inicio" className="bg-black-red text-white py-20">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-red-accent text-white" aria-label="Categoria da academia">
-            {finalSettings.heroSubtitle || "Nova Academia"}
-          </Badge>
-          <h1 id="hero-title" className="text-5xl md:text-7xl font-bold mb-6 text-balance">
-            {finalSettings.heroTitle || "TRANSFORME SEU CORPO"}
-          </h1>
+          <Badge className="mb-4 bg-red-accent text-white">{settings.heroSubtitle || "Nova Academia"}</Badge>
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
+            {settings.heroTitle || "TRANSFORME SEU CORPO"}
+          </h2>
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto text-pretty">
-            {finalSettings.description}
+            {settings.description}
           </p>
-
-          {/* Botões na parte inferior */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <MatriculeSeButton
-              settings={finalSettings}
+              settings={settings}
               className="bg-red-accent hover:bg-red-accent/90 text-white"
             >
               Matricule-se
             </MatriculeSeButton>
-            <CheckInModal>
+
+            <Link href="#sobre">
               <Button
                 size="lg"
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-black bg-transparent"
               >
-                Fazer Check-in
+                Conheça a Academia
               </Button>
-            </CheckInModal>
-            <AppointmentModal>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
-              >
-                Agendar Aula Experimental
-              </Button>
-            </AppointmentModal>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-black bg-transparent"
-            >
-              Conheça a Academia
-            </Button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-muted/30" aria-labelledby="features-title">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 id="features-title" className="text-3xl md:text-4xl font-bold mb-4">
-              {finalSettings.features?.title || `Por que escolher a ${finalSettings.name}?`}
-            </h2>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || "Por que escolher a Black Red?"}</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {finalSettings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
+              {settings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {finalSettings.features?.items?.map((feature: any, index: number) => {
-              const IconComponent = feature.icon === "Dumbbell" ? Dumbbell :
-                                   feature.icon === "Users" ? Users :
-                                   feature.icon === "Clock" ? Clock :
-                                   feature.icon === "Trophy" ? Trophy : Dumbbell
-
+            {settings.features?.items?.map((feature, index) => {
+              const IconComponent = feature.icon === "Dumbbell" ? Dumbbell : 
+                                  feature.icon === "Users" ? Users :
+                                  feature.icon === "Clock" ? Clock :
+                                  feature.icon === "Trophy" ? Trophy : Dumbbell
+              
               return (
                 <Card key={index} className="text-center border-0 shadow-lg">
                   <CardHeader>
@@ -257,7 +150,7 @@ async function HomePageContent() {
                     <CardTitle>Horário Flexível</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Aberto das {finalSettings.hours.weekdays.open} às {finalSettings.hours.weekdays.close} para se adequar à sua rotina</p>
+                    <p className="text-muted-foreground">Aberto das {settings.hours.weekdays.open} às {settings.hours.weekdays.close} para se adequar à sua rotina</p>
                   </CardContent>
                 </Card>
                 <Card className="text-center border-0 shadow-lg">
@@ -275,27 +168,25 @@ async function HomePageContent() {
         </div>
       </section>
 
-
-
       {/* Plans */}
-      <section id="planos" className="py-20" aria-labelledby="plans-title">
+      <section id="planos" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 id="plans-title" className="text-3xl md:text-4xl font-bold mb-4">Escolha seu Plano</h2>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">Escolha seu Plano</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Planos flexíveis que se adaptam ao seu estilo de vida e objetivos
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {plans
-              .filter((plan: any) => plan.status === "active")
-              .sort((planA: any, planB: any) => planA.price - planB.price)
-              .map((plan: any) => (
-              <Card
-                key={plan.id}
+              .filter(plan => plan.status === "active")
+              .sort((planA, planB) => planA.price - planB.price)
+              .map((plan) => (
+              <Card 
+                key={plan.id} 
                 className={`border-2 transition-colors ${
-                  plan.popular
-                    ? "border-red-accent relative"
+                  plan.popular 
+                    ? "border-red-accent relative" 
                     : "hover:border-red-accent"
                 }`}
               >
@@ -313,16 +204,14 @@ async function HomePageContent() {
                 </CardHeader>
                 <CardContent className="space-y-4 flex flex-col justify-between h-full">
                   <ul className="space-y-2">
-                    {plan.features.map((feature: string, index: number) => (
+                    {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center gap-2">
                         <Star className="h-4 w-4 text-red-accent" />
                         {feature}
                       </li>
                     ))}
                   </ul>
-                  <PlanSelectionModal plan={plan}>
-                    <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
-                  </PlanSelectionModal>
+                  <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
                 </CardContent>
               </Card>
             ))}
@@ -331,18 +220,18 @@ async function HomePageContent() {
       </section>
 
       {/* About */}
-      <section id="sobre" className="py-20 bg-muted/30" aria-labelledby="about-title">
+      <section id="sobre" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 id="about-title" className="text-3xl md:text-4xl font-bold mb-6">Sobre a {finalSettings.name}</h2>
+              <h3 className="text-3xl md:text-4xl font-bold mb-6">Sobre a {settings.name}</h3>
               <div className="text-lg text-muted-foreground mb-8 text-pretty">
-                {finalSettings.about ? (
-                  <p>{finalSettings.about}</p>
+                {settings.about ? (
+                  <p>{settings.about}</p>
                 ) : (
                   <>
                     <p className="mb-6">
-                      Fundada em 2024, a {finalSettings.name} nasceu com o propósito de revolucionar o conceito de academia. Combinamos
+                      Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos
                       tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
                     </p>
                     <p>
@@ -354,15 +243,15 @@ async function HomePageContent() {
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.activeMembers || 500}+</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.activeMembers || 500}+</div>
                   <div className="text-sm text-muted-foreground">Alunos Ativos</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.personalTrainers || 15}</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.personalTrainers || 15}</div>
                   <div className="text-sm text-muted-foreground">Personal Trainers</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-red-accent">{finalSettings.metrics?.operatingHours || "24/7"}</div>
+                  <div className="text-3xl font-bold text-red-accent">{settings.metrics?.operatingHours || "24/7"}</div>
                   <div className="text-sm text-muted-foreground">Funcionamento</div>
                 </div>
               </div>
@@ -370,7 +259,7 @@ async function HomePageContent() {
             <div className="bg-black-red rounded-lg p-8 text-white">
               <img
                 src="/modern-gym-interior-with-red-and-black-equipment.jpg"
-                alt={`Interior da academia ${finalSettings.name}`}
+                alt="Interior da academia Black Red"
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
               <h4 className="text-xl font-bold mb-4">Ambiente Motivador</h4>
@@ -383,148 +272,73 @@ async function HomePageContent() {
         </div>
       </section>
 
-      {/* Testimonials Carousel */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Veja o que nossos alunos dizem sobre a experiência na {finalSettings.name}
-            </p>
-          </div>
-
-          {/* Interactive Carousel */}
-          <TestimonialsCarousel
-            testimonials={testimonials.length > 0 ? testimonials : [
-              {
-                id: "testimonial-1",
-                name: "João Silva",
-                content: `A ${finalSettings.name} transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados. Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!`,
-                rating: 5,
-                category: "Perda de Peso",
-                isActive: true,
-                createdAt: "2024-01-15T10:00:00Z"
-              },
-              {
-                id: "testimonial-2",
-                name: "Maria Santos",
-                content: "Excelente academia! Os equipamentos são modernos e sempre bem cuidados. As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.",
-                rating: 5,
-                category: "Condicionamento",
-                isActive: true,
-                createdAt: "2024-02-20T14:30:00Z"
-              },
-              {
-                id: "testimonial-3",
-                name: "Pedro Costa",
-                content: "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar. Recomendo para todos que querem mudar de vida através do fitness.",
-                rating: 5,
-                category: "Ganho de Massa",
-                isActive: true,
-                createdAt: "2024-03-10T09:15:00Z"
-              },
-              {
-                id: "testimonial-4",
-                name: "Ana Oliveira",
-                content: "Ambiente incrível e professores muito dedicados! As aulas de dança são sensacionais e me ajudam a manter a forma de forma divertida. Já indiquei para várias amigas!",
-                rating: 5,
-                category: "Dança e Fitness",
-                isActive: true,
-                createdAt: "2024-04-05T11:45:00Z"
-              },
-              {
-                id: "testimonial-5",
-                name: "Carlos Mendes",
-                content: `A ${finalSettings.name} superou todas as minhas expectativas! Em apenas 3 meses consegui definir o abdômen e ganhar força. O acompanhamento personalizado faz toda a diferença.`,
-                rating: 5,
-                category: "Definição Muscular",
-                isActive: true,
-                createdAt: "2024-05-12T16:20:00Z"
-              }
-            ]}
-            autoPlay={true}
-            autoPlayInterval={6000}
-          />
-        </div>
-      </section>
-
-      {/* Unified Content Section - Partners, Ads, Promotions */}
-      <UnifiedContentSection />
-
       {/* Contact */}
-      <section id="contato" className="py-20" aria-labelledby="contact-title">
+      <section id="contato" className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 id="contact-title" className="text-3xl md:text-4xl font-bold mb-4">Entre em Contato</h2>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">Entre em Contato</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Tire suas dúvidas ou agende uma visita. Estamos aqui para te ajudar!
             </p>
           </div>
-
-          {/* Layout responsivo: 2 colunas em desktop, stacked em mobile */}
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
-            {/* Formulário de Contato */}
-            <Card className="p-6 lg:p-8 order-1">
+          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+            <Card className="p-8">
               <CardHeader className="px-0 pt-0">
-                <CardTitle className="text-xl lg:text-2xl">Envie uma Mensagem</CardTitle>
-                <CardDescription className="text-base">Responderemos em até 24 horas</CardDescription>
+                <CardTitle>Envie uma Mensagem</CardTitle>
+                <CardDescription>Responderemos em até 24 horas</CardDescription>
               </CardHeader>
               <CardContent className="px-0 space-y-4">
-                <Suspense fallback={<div className="text-center py-8">Carregando formulário...</div>}>
-                  <HomePageClient settings={finalSettings} plans={plans} />
+                <Suspense fallback={<div>Carregando formulário...</div>}>
+                  <HomePageClient settings={settings} plans={plans} />
                 </Suspense>
               </CardContent>
             </Card>
 
-            {/* Informações de Contato */}
-            <div className="space-y-8 order-2">
-              {/* Informações de Contato */}
+            <div className="space-y-8">
               <div>
                 <h4 className="text-xl font-bold mb-6">Informações de Contato</h4>
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 text-red-accent mt-1 flex-shrink-0" />
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-red-accent" />
                     <div>
                       <p className="font-medium">Endereço</p>
-                      <p className="text-muted-foreground">{finalSettings.address}</p>
+                      <p className="text-muted-foreground">{settings.address}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Phone className="h-5 w-5 text-red-accent flex-shrink-0" />
+                    <Phone className="h-5 w-5 text-red-accent" />
                     <div>
                       <p className="font-medium">Telefone</p>
-                      <p className="text-muted-foreground">{finalSettings.phone}</p>
+                      <p className="text-muted-foreground">{settings.phone}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-red-accent flex-shrink-0" />
+                    <Mail className="h-5 w-5 text-red-accent" />
                     <div>
                       <p className="font-medium">E-mail</p>
-                      <p className="text-muted-foreground">{finalSettings.email}</p>
+                      <p className="text-muted-foreground">{settings.email}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Horários de Funcionamento */}
               <div>
                 <h4 className="text-xl font-bold mb-4">Horários de Funcionamento</h4>
                 <div className="space-y-2 text-muted-foreground">
-                  <div className="flex justify-between items-center py-1">
-                    <span className="font-medium">Segunda a Sexta:</span>
-                    <span>{finalSettings.hours.weekdays.open} - {finalSettings.hours.weekdays.close}</span>
+                  <div className="flex justify-between">
+                    <span>Segunda a Sexta:</span>
+                    <span>{settings.hours.weekdays.open} - {settings.hours.weekdays.close}</span>
                   </div>
-                  <div className="flex justify-between items-center py-1">
-                    <span className="font-medium">Sábado:</span>
-                    <span>{finalSettings.hours.saturday.open} - {finalSettings.hours.saturday.close}</span>
+                  <div className="flex justify-between">
+                    <span>Sábado:</span>
+                    <span>{settings.hours.saturday.open} - {settings.hours.saturday.close}</span>
                   </div>
-                  <div className="flex justify-between items-center py-1">
-                    <span className="font-medium">Domingo:</span>
-                    <span>{finalSettings.hours.sunday.open} - {finalSettings.hours.sunday.close}</span>
+                  <div className="flex justify-between">
+                    <span>Domingo:</span>
+                    <span>{settings.hours.sunday.open} - {settings.hours.sunday.close}</span>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -537,7 +351,7 @@ async function HomePageContent() {
             <div>
               <div className="flex items-center gap-2 mb-4">
                 <Dumbbell className="h-6 w-6 text-red-accent" />
-                <h5 className="text-xl font-bold">{finalSettings.name.toUpperCase()}</h5>
+                <h5 className="text-xl font-bold">{settings.name.toUpperCase()}</h5>
               </div>
               <p className="text-muted-foreground">Transformando vidas através do fitness desde 2024.</p>
             </div>
@@ -578,25 +392,18 @@ async function HomePageContent() {
             <div>
               <h6 className="font-bold mb-4">Contato</h6>
               <ul className="space-y-2 text-muted-foreground">
-                <li>{finalSettings.phone}</li>
-                <li>{finalSettings.email}</li>
-                <li>{finalSettings.address}</li>
+                <li>{settings.phone}</li>
+                <li>{settings.email}</li>
+                <li>{settings.address}</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-muted-foreground/20 mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 {finalSettings.name}. Todos os direitos reservados.</p>
+            <p>&copy; 2024 {settings.name}. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
-
-      <ChatFlutuante />
-      <AdsBanner />
       </div>
     </DynamicColorsProvider>
   )
-}
-
-export default function HomePage() {
-  return <HomePageContent />
 }
