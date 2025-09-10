@@ -153,12 +153,14 @@ async function HomePageContent() {
       </header>
 
       {/* Hero Section */}
-      <section id="inicio" className="bg-black-red text-white py-20">
+      <section id="inicio" className="bg-black-red text-white py-20" aria-labelledby="hero-title">
         <div className="container mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-red-accent text-white">{finalSettings.heroSubtitle || "Nova Academia"}</Badge>
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 text-balance">
+          <Badge className="mb-4 bg-red-accent text-white" aria-label="Categoria da academia">
+            {finalSettings.heroSubtitle || "Nova Academia"}
+          </Badge>
+          <h1 id="hero-title" className="text-5xl md:text-7xl font-bold mb-6 text-balance">
             {finalSettings.heroTitle || "TRANSFORME SEU CORPO"}
-          </h2>
+          </h1>
           <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-3xl mx-auto text-pretty">
             {finalSettings.description}
           </p>
@@ -201,10 +203,12 @@ async function HomePageContent() {
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30" aria-labelledby="features-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">{finalSettings.features?.title || `Por que escolher a ${finalSettings.name}?`}</h3>
+            <h2 id="features-title" className="text-3xl md:text-4xl font-bold mb-4">
+              {finalSettings.features?.title || `Por que escolher a ${finalSettings.name}?`}
+            </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               {finalSettings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
@@ -274,10 +278,10 @@ async function HomePageContent() {
 
 
       {/* Plans */}
-      <section id="planos" className="py-20">
+      <section id="planos" className="py-20" aria-labelledby="plans-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">Escolha seu Plano</h3>
+            <h2 id="plans-title" className="text-3xl md:text-4xl font-bold mb-4">Escolha seu Plano</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Planos flexíveis que se adaptam ao seu estilo de vida e objetivos
             </p>
@@ -327,11 +331,11 @@ async function HomePageContent() {
       </section>
 
       {/* About */}
-      <section id="sobre" className="py-20 bg-muted/30">
+      <section id="sobre" className="py-20 bg-muted/30" aria-labelledby="about-title">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl md:text-4xl font-bold mb-6">Sobre a {finalSettings.name}</h3>
+              <h2 id="about-title" className="text-3xl md:text-4xl font-bold mb-6">Sobre a {finalSettings.name}</h2>
               <div className="text-lg text-muted-foreground mb-8 text-pretty">
                 {finalSettings.about ? (
                   <p>{finalSettings.about}</p>
@@ -383,7 +387,7 @@ async function HomePageContent() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h3>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Veja o que nossos alunos dizem sobre a experiência na {finalSettings.name}
             </p>
@@ -448,10 +452,10 @@ async function HomePageContent() {
       <UnifiedContentSection />
 
       {/* Contact */}
-      <section id="contato" className="py-20">
+      <section id="contato" className="py-20" aria-labelledby="contact-title">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">Entre em Contato</h3>
+            <h2 id="contact-title" className="text-3xl md:text-4xl font-bold mb-4">Entre em Contato</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Tire suas dúvidas ou agende uma visita. Estamos aqui para te ajudar!
             </p>
