@@ -80,11 +80,11 @@ export function PartnersSection() {
   }
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
+    <section className="py-20 bg-white">
+      <div className="container mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Heart className="h-4 w-4" />
             Parceiros de Confiança
           </div>
@@ -97,7 +97,7 @@ export function PartnersSection() {
         </div>
 
         {/* Partners Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
           {partners.map((partner) => (
             <Card
               key={partner.id}

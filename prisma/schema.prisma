@@ -224,28 +224,34 @@ model Promotion {
 }
 
 model Partner {
-  id          String   @id @default(cuid())
-  name        String
-  description String   @db.Text
-  logo        String?  // Logo URL or path
-  link        String?  // Website or contact link
-  category    String   // e.g., "Nutricionista", "Fisioterapeuta", "Personal"
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+   id            String   @id @default(cuid())
+   name          String
+   description   String   @db.Text
+   logo          String?  // Logo URL or path
+   link          String?  // Website or contact link
+   category      String   // e.g., "Nutricionista", "Fisioterapeuta", "Personal"
+   isActive      Boolean  @default(true)
+   featured      Boolean  @default(false) // Parceiro destacado
+   priority      Int      @default(0)     // Prioridade (0-10, maior = mais prioridade)
+   displayOrder  Int      @default(0)     // Ordem de exibição
+   createdAt     DateTime @default(now())
+   updatedAt     DateTime @updatedAt
 
-  @@map("partners")
+   @@map("partners")
 }
 
 model Ad {
-  id          String   @id @default(cuid())
-  title       String
-  image       String?  // Banner image URL or path
-  link        String?  // Target URL
-  validUntil  DateTime // Expiration date
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+   id            String   @id @default(cuid())
+   title         String
+   image         String?  // Banner image URL or path
+   link          String?  // Target URL
+   validUntil    DateTime // Expiration date
+   isActive      Boolean  @default(true)
+   featured      Boolean  @default(false) // Anúncio destacado
+   priority      Int      @default(0)     // Prioridade (0-10, maior = mais prioridade)
+   displayOrder  Int      @default(0)     // Ordem de exibição
+   createdAt     DateTime @default(now())
+   updatedAt     DateTime @updatedAt
 
-  @@map("ads")
+   @@map("ads")
 }

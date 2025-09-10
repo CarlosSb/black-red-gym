@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Plus, Edit, Trash2, Gift, Calendar, Eye, EyeOff } from "lucide-react"
+import { Plus, Edit, Trash2, Gift, Calendar, Eye, EyeOff, ImageOff } from "lucide-react"
 import { toast } from "sonner"
 
 interface Promotion {
@@ -27,6 +27,7 @@ export default function PromotionsPage() {
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -41,14 +42,22 @@ export default function PromotionsPage() {
 
   const fetchPromotions = async () => {
     try {
+      console.log('🔍 Buscando promoções...')
       const response = await fetch('/api/promotions?status=all')
+      console.log('📡 Resposta da API:', response.status, response.statusText)
+
       const data = await response.json()
+      console.log('📊 Dados recebidos:', data)
 
       if (data.success) {
+        console.log('✅ Promoções encontradas:', data.promotions.length)
         setPromotions(data.promotions)
+      } else {
+        console.log('❌ Erro na resposta:', data.error)
+        toast.error(data.error || 'Erro ao carregar promoções')
       }
     } catch (error) {
-      console.error('Erro ao carregar promoções:', error)
+      console.error('💥 Erro ao carregar promoções:', error)
       toast.error('Erro ao carregar promoções')
     } finally {
       setLoading(false)
@@ -136,6 +145,17 @@ export default function PromotionsPage() {
     return new Date(dateString).toLocaleDateString('pt-BR')
   }
 
+  const handleImageError = (imageUrl: string) => {
+    setImageErrors(prev => new Set(prev).add(imageUrl))
+  }
+
+  const getImageSource = (imageUrl?: string) => {
+    if (!imageUrl || imageErrors.has(imageUrl)) {
+      return null
+    }
+    return imageUrl
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -145,7 +165,7 @@ export default function PromotionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -248,7 +268,7 @@ export default function PromotionsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">

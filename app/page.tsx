@@ -12,6 +12,9 @@ import { CheckInModal } from "@/components/checkin-modal"
 import { ChatFlutuante } from "@/components/chat-flutuante"
 import { AppointmentModal } from "@/components/appointment-modal"
 import { PlanSelectionModal } from "@/components/plan-selection-modal"
+import { UnifiedContentSection } from "@/components/unified-content-section"
+import { AdsBanner } from "@/components/ads-banner"
+import { TestimonialCard } from "@/components/ui/testimonial-card"
 
 async function HomePageContent() {
   // Fetch settings from API
@@ -380,96 +383,60 @@ async function HomePageContent() {
           <div className="relative overflow-hidden">
             <div className="flex gap-8 animate-carousel">
               {/* Testimonial 1 */}
-              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
-                <CardHeader>
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">JS</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg">João Silva</CardTitle>
-                  <div className="flex justify-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    &ldquo;A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados.
-                    Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!&rdquo;
-                  </p>
-                </CardContent>
-              </Card>
+              <TestimonialCard
+                testimonial={{
+                  id: "testimonial-1",
+                  name: "João Silva",
+                  content: "A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados. Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!",
+                  rating: 5,
+                  category: "Perda de Peso",
+                  isActive: true,
+                  createdAt: "2024-01-15T10:00:00Z"
+                }}
+                className="flex-shrink-0 w-full md:w-1/3"
+              />
 
               {/* Testimonial 2 */}
-              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
-                <CardHeader>
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">MS</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg">Maria Santos</CardTitle>
-                  <div className="flex justify-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    &ldquo;Excelente academia! Os equipamentos são modernos e sempre bem cuidados.
-                    As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.&rdquo;
-                  </p>
-                </CardContent>
-              </Card>
+              <TestimonialCard
+                testimonial={{
+                  id: "testimonial-2",
+                  name: "Maria Santos",
+                  content: "Excelente academia! Os equipamentos são modernos e sempre bem cuidados. As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.",
+                  rating: 5,
+                  category: "Condicionamento",
+                  isActive: true,
+                  createdAt: "2024-02-20T14:30:00Z"
+                }}
+                className="flex-shrink-0 w-full md:w-1/3"
+              />
 
               {/* Testimonial 3 */}
-              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
-                <CardHeader>
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">PC</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg">Pedro Costa</CardTitle>
-                  <div className="flex justify-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    &ldquo;Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar.
-                    Recomendo para todos que querem mudar de vida através do fitness.&rdquo;
-                  </p>
-                </CardContent>
-              </Card>
+              <TestimonialCard
+                testimonial={{
+                  id: "testimonial-3",
+                  name: "Pedro Costa",
+                  content: "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar. Recomendo para todos que querem mudar de vida através do fitness.",
+                  rating: 5,
+                  category: "Ganho de Massa",
+                  isActive: true,
+                  createdAt: "2024-03-10T09:15:00Z"
+                }}
+                className="flex-shrink-0 w-full md:w-1/3"
+              />
 
               {/* Testimonial 4 (Duplicate for seamless loop) */}
-              <Card className="flex-shrink-0 w-full md:w-1/3 text-center border-0 shadow-lg py-8">
-                <CardHeader>
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-red-accent rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold text-xl">JS</span>
-                    </div>
-                  </div>
-                  <CardTitle className="text-lg">João Silva</CardTitle>
-                  <div className="flex justify-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    &ldquo;A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador.
-                    Perdi 15kg em 6 meses e me sinto muito mais confiante!&rdquo;
-                  </p>
-                </CardContent>
-              </Card>
+              <TestimonialCard
+                testimonial={{
+                  id: "testimonial-4",
+                  name: "João Silva",
+                  content: "A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador. Perdi 15kg em 6 meses e me sinto muito mais confiante!",
+                  rating: 5,
+                  category: "Transformação",
+                  isActive: true,
+                  createdAt: "2024-01-15T10:00:00Z"
+                }}
+                className="flex-shrink-0 w-full md:w-1/3"
+              />
             </div>
           </div>
 
@@ -481,6 +448,9 @@ async function HomePageContent() {
           </div>
         </div>
       </section>
+
+      {/* Unified Content Section - Partners, Ads, Promotions */}
+      <UnifiedContentSection />
 
       {/* Contact */}
       <section id="contato" className="py-20">
@@ -622,6 +592,7 @@ async function HomePageContent() {
       </footer>
 
       <ChatFlutuante />
+      <AdsBanner />
       </div>
     </DynamicColorsProvider>
   )

@@ -47,9 +47,11 @@ export async function GET(request: NextRequest) {
       delete where.isActive
     }
 
-    // Filtrar apenas anúncios não expirados
-    where.validUntil = {
-      gte: new Date()
+    // Filtrar apenas anúncios não expirados (exceto para admin que quer ver todos)
+    if (status !== "all") {
+      where.validUntil = {
+        gte: new Date()
+      }
     }
 
     const ads = await prisma.ad.findMany({

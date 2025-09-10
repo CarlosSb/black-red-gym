@@ -389,6 +389,333 @@ async function main() {
     skipDuplicates: true,
   })
 
+  // 9. Criar promoções
+  console.log('🎁 Criando promoções...')
+
+  await prisma.promotion.createMany({
+    data: [
+      {
+        title: 'Mês de Janeiro com Desconto',
+        description: 'Aproveite 30% de desconto na matrícula + primeira mensalidade grátis! Promoção válida apenas para janeiro. Venha transformar seu corpo com a BlackRed Fit.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-01-31'),
+        isActive: true,
+      },
+      {
+        title: 'Plano Família',
+        description: 'Traga sua família e economize! 20% de desconto para o segundo familiar e 30% para o terceiro. Ideal para manter todos da família ativos e saudáveis.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-03-31'),
+        isActive: true,
+      },
+      {
+        title: 'Black Friday Fitness',
+        description: 'Oferta imperdível! Plano anual com 50% de desconto + 3 meses de personal trainer grátis. Transforme 2025 no seu ano fitness!',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-11-30'),
+        isActive: true,
+      },
+      {
+        title: 'Dia dos Namorados Fitness',
+        description: 'Surpreenda seu amor com saúde! Pacote casal com 25% de desconto + avaliação física completa para os dois.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-06-12'),
+        isActive: true,
+      },
+      {
+        title: 'Verão em Forma',
+        description: 'Prepare-se para o verão com 40% de desconto em planos trimestrais + consultoria nutricional incluída. Chegue pronto para a praia!',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-12-20'),
+        isActive: true,
+      },
+      {
+        title: 'Estudante BlackRed',
+        description: 'Desconto especial para estudantes! Apresente carteirinha e ganhe 25% de desconto no plano semestral. Educação e saúde andam juntas.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-12-31'),
+        isActive: true,
+      },
+      {
+        title: 'Carnaval Fitness',
+        description: 'Prepare seu corpo para o Carnaval! 35% de desconto em planos mensais + aulas de dança gratuitas. Entre em forma para curtir a folia!',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-02-15'),
+        isActive: true,
+      },
+      {
+        title: 'Dia das Mães Fitness',
+        description: 'Presenteie sua mãe com saúde! Pacote mãe-filha com 30% de desconto + sessão de massagem relaxante incluída.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-05-11'),
+        isActive: true,
+      },
+      {
+        title: 'Páscoa Saudável',
+        description: 'Chocolate fitness saudável grátis! Compre qualquer plano e ganhe barras de proteína artesanais. Cuide da saúde sem abrir mão do prazer.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-04-20'),
+        isActive: true,
+      },
+      {
+        title: 'Tire suas Férias em Forma',
+        description: 'Prepare-se para as férias! Plano trimestral com 25% de desconto + acompanhamento nutricional para manter a forma durante as viagens.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-12-31'),
+        isActive: true,
+      },
+      {
+        title: 'Indique e Ganhe',
+        description: 'Indique um amigo e ganhe 1 mês grátis! Para cada indicação que se matricular, você ganha um mês de academia sem custo adicional.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-12-31'),
+        isActive: true,
+      },
+      {
+        title: 'Aniversário BlackRed',
+        description: 'Celebre conosco! 4 anos de BlackRed Fit com 40% de desconto na matrícula + brinde exclusivo para os primeiros 50 inscritos.',
+        image: '/placeholder.jpg',
+        validUntil: new Date('2025-03-15'),
+        isActive: true,
+      },
+    ],
+    skipDuplicates: true,
+  })
+
+  // 10. Criar parceiros
+  console.log('🤝 Criando parceiros...')
+
+  await prisma.partner.createMany({
+    data: [
+      {
+        name: 'NutriVida',
+        description: 'Consultoria nutricional especializada em atletas e pessoas ativas. Acompanhamento personalizado com foco em performance e saúde.',
+        logo: '/placeholder.svg',
+        link: 'https://nutrivida.com.br',
+        category: 'Nutricionista',
+        isActive: true,
+        featured: true,
+        priority: 10,
+        displayOrder: 1,
+      },
+      {
+        name: 'FisioSport',
+        description: 'Fisioterapia esportiva especializada em lesões musculares, articulares e recuperação pós-treino. Atendimento de excelência.',
+        logo: '/placeholder.svg',
+        link: 'https://fisiosport.com.br',
+        category: 'Fisioterapeuta',
+        isActive: true,
+        featured: true,
+        priority: 9,
+        displayOrder: 2,
+      },
+      {
+        name: 'Personal Pro',
+        description: 'Equipe de personal trainers certificados com mais de 10 anos de experiência. Treinos personalizados para todos os níveis.',
+        logo: '/placeholder.svg',
+        link: 'https://personalpro.com.br',
+        category: 'Personal Trainer',
+        isActive: true,
+        featured: true,
+        priority: 8,
+        displayOrder: 3,
+      },
+      {
+        name: 'Massagem & Relax',
+        description: 'Massagens terapêuticas e relaxantes. Recuperação muscular, redução de tensão e bem-estar geral.',
+        logo: '/placeholder.svg',
+        link: 'https://massagemerelax.com.br',
+        category: 'Massagista',
+        isActive: true,
+      },
+      {
+        name: 'Suplementos Fit',
+        description: 'Loja especializada em suplementos alimentares para atletas. Produtos de alta qualidade com preços competitivos.',
+        logo: '/placeholder.svg',
+        link: 'https://suplementosfit.com.br',
+        category: 'Suplementos',
+        isActive: true,
+      },
+      {
+        name: 'PsicoFitness',
+        description: 'Psicologia esportiva para atletas e praticantes de atividade física. Suporte mental para alcançar seus objetivos.',
+        logo: '/placeholder.svg',
+        link: 'https://psicofitness.com.br',
+        category: 'Psicólogo',
+        isActive: true,
+      },
+      {
+        name: 'Clínica Ortopédica',
+        description: 'Avaliação e tratamento ortopédico especializado. Prevenção e tratamento de lesões relacionadas à prática esportiva.',
+        logo: '/placeholder.svg',
+        link: 'https://clinicaortopedica.com.br',
+        category: 'Ortopedista',
+        isActive: true,
+      },
+      {
+        name: 'Pilates Center',
+        description: 'Estúdio especializado em Pilates terapêutico e funcional. Fortalecimento do core e correção postural.',
+        logo: '/placeholder.svg',
+        link: 'https://pilatescenter.com.br',
+        category: 'Pilates',
+        isActive: true,
+      },
+      {
+        name: 'Dermatologia Estética',
+        description: 'Tratamentos dermatológicos especializados para atletas. Cuidados com a pele, hidratação e recuperação pós-treino.',
+        logo: '/placeholder.svg',
+        link: 'https://dermatologiaestetica.com.br',
+        category: 'Dermatologista',
+        isActive: true,
+      },
+      {
+        name: 'Laboratório BioFitness',
+        description: 'Exames laboratoriais especializados para atletas. Avaliação hormonal, vitaminas e minerais essenciais para performance.',
+        logo: '/placeholder.svg',
+        link: 'https://biofitnesslab.com.br',
+        category: 'Laboratório',
+        isActive: true,
+      },
+      {
+        name: 'Farmacia do Atleta',
+        description: 'Farmácia especializada em produtos para atletas. Medicamentos, curativos e produtos para recuperação muscular.',
+        logo: '/placeholder.svg',
+        link: 'https://farmaciadoatleta.com.br',
+        category: 'Farmácia',
+        isActive: true,
+      },
+      {
+        name: 'Academia Kids',
+        description: 'Programa de atividades físicas para crianças e adolescentes. Desenvolvimento motor e hábitos saudáveis desde cedo.',
+        logo: '/placeholder.svg',
+        link: 'https://academiakids.com.br',
+        category: 'Atividades Infantis',
+        isActive: true,
+      },
+      {
+        name: 'Yoga & Meditação',
+        description: 'Aulas de yoga e meditação para equilíbrio mental e físico. Técnicas de relaxamento e mindfulness para atletas.',
+        logo: '/placeholder.svg',
+        link: 'https://yogameditacao.com.br',
+        category: 'Yoga',
+        isActive: true,
+      },
+      {
+        name: 'Loja Esportiva Premium',
+        description: 'Equipamentos esportivos de alta performance. Roupas técnicas, tênis e acessórios para todos os tipos de atividade física.',
+        logo: '/placeholder.svg',
+        link: 'https://lojaesportivapremium.com.br',
+        category: 'Equipamentos',
+        isActive: true,
+      },
+      {
+        name: 'Clínica do Sono',
+        description: 'Especialistas em medicina do sono para atletas. Otimização do descanso para melhor performance e recuperação.',
+        logo: '/placeholder.svg',
+        link: 'https://clinicadosono.com.br',
+        category: 'Medicina do Sono',
+        isActive: true,
+      },
+      {
+        name: 'Barraquinha Saudável',
+        description: 'Alimentação saudável e balanceada. Refeições preparadas por nutricionistas com foco em performance esportiva.',
+        logo: '/placeholder.svg',
+        link: 'https://barraquinhasaudavel.com.br',
+        category: 'Alimentação',
+        isActive: true,
+      },
+    ],
+    skipDuplicates: true,
+  })
+
+  // 11. Criar anúncios
+  console.log('📢 Criando anúncios...')
+
+  await prisma.ad.createMany({
+    data: [
+      {
+        title: 'Ganhe 1 Mês Grátis!',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/matricula?promo=mesgratis',
+        validUntil: new Date('2025-02-28'),
+        isActive: true,
+        featured: true,
+        priority: 10,
+        displayOrder: 1,
+      },
+      {
+        title: 'Avaliação Física Gratuita',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/avaliacao',
+        validUntil: new Date('2025-03-31'),
+        isActive: true,
+        featured: false,
+        priority: 7,
+        displayOrder: 2,
+      },
+      {
+        title: 'Personal Trainer Especialista',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/personal',
+        validUntil: new Date('2025-04-30'),
+        isActive: true,
+        featured: true,
+        priority: 9,
+        displayOrder: 3,
+      },
+      {
+        title: 'Suplementos com 30% OFF',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/suplementos',
+        validUntil: new Date('2025-05-15'),
+        isActive: true,
+      },
+      {
+        title: 'Aulas de CrossFit Experimentais',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/crossfit',
+        validUntil: new Date('2025-06-30'),
+        isActive: true,
+      },
+      {
+        title: 'Massagem Descontínua',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/massagem',
+        validUntil: new Date('2025-07-31'),
+        isActive: true,
+      },
+      {
+        title: 'Consultoria Nutricional',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/nutricionista',
+        validUntil: new Date('2025-08-31'),
+        isActive: true,
+      },
+      {
+        title: 'Equipamentos Fitness',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/equipamentos',
+        validUntil: new Date('2025-09-30'),
+        isActive: true,
+      },
+      {
+        title: 'Plano Anual com Desconto',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/planos',
+        validUntil: new Date('2025-10-31'),
+        isActive: true,
+      },
+      {
+        title: 'Aulas de Pilates Grátis',
+        image: '/placeholder.jpg',
+        link: 'https://gymstarter.com.br/pilates',
+        validUntil: new Date('2025-11-30'),
+        isActive: true,
+      },
+    ],
+    skipDuplicates: true,
+  })
+
   console.log('🎉 Seed concluído com sucesso!')
   console.log('📊 Dados criados:')
   console.log(`   👥 ${4} usuários`)
@@ -399,6 +726,9 @@ async function main() {
   console.log(`   📅 ${4} agendamentos`)
   console.log(`   💬 ${3} mensagens`)
   console.log(`   🤝 ${3} indicações`)
+  console.log(`   🎁 ${12} promoções`)
+  console.log(`   🤝 ${16} parceiros`)
+  console.log(`   📢 ${10} anúncios`)
   console.log('')
   console.log('🔐 Credenciais de acesso:')
   console.log('   Admin: admin@gymstarter.com.br / 123456')

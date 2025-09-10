@@ -8,17 +8,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Plus, Edit, Trash2, Megaphone, Calendar, Eye, EyeOff, ExternalLink } from "lucide-react"
+import { Plus, Edit, Trash2, Megaphone, Calendar, Eye, EyeOff, ExternalLink, ImageOff } from "lucide-react"
 import { toast } from "sonner"
 
 interface Ad {
-  id: string
-  title: string
-  image?: string
-  link?: string
-  validUntil: string
-  isActive: boolean
-  createdAt: string
+   id: string
+   title: string
+   image?: string
+   link?: string
+   validUntil: string
+   isActive: boolean
+   featured: boolean
+   priority: number
+   displayOrder: number
+   createdAt: string
 }
 
 export default function AdsPage() {
@@ -26,12 +29,16 @@ export default function AdsPage() {
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingAd, setEditingAd] = useState<Ad | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     title: '',
     image: '',
     link: '',
     validUntil: '',
-    isActive: true
+    isActive: true,
+    featured: false,
+    priority: 0,
+    displayOrder: 0
   })
 
   useEffect(() => {
@@ -94,7 +101,10 @@ export default function AdsPage() {
       image: ad.image || '',
       link: ad.link || '',
       validUntil: new Date(ad.validUntil).toISOString().split('T')[0],
-      isActive: ad.isActive
+      isActive: ad.isActive,
+      featured: ad.featured,
+      priority: ad.priority,
+      displayOrder: ad.displayOrder
     })
     setIsDialogOpen(true)
   }
@@ -127,12 +137,26 @@ export default function AdsPage() {
       image: '',
       link: '',
       validUntil: '',
-      isActive: true
+      isActive: true,
+      featured: false,
+      priority: 0,
+      displayOrder: 0
     })
   }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR')
+  }
+
+  const handleImageError = (imageUrl: string) => {
+    setImageErrors(prev => new Set(prev).add(imageUrl))
+  }
+
+  const getImageSource = (imageUrl?: string) => {
+    if (!imageUrl || imageErrors.has(imageUrl)) {
+      return null
+    }
+    return imageUrl
   }
 
   if (loading) {
@@ -144,7 +168,7 @@ export default function AdsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -228,6 +252,51 @@ export default function AdsPage() {
                 <Label htmlFor="isActive">Ativo</Label>
               </div>
 
+              <div>
+                <Label htmlFor="featured">Destaque</Label>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Switch
+                    id="featured"
+                    checked={formData.featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
+                  />
+                  <Label htmlFor="featured" className="text-sm text-muted-foreground">
+                    Anúncio destacado (aparece com mais frequência)
+                  </Label>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="priority">Prioridade (0-10)</Label>
+                <Input
+                  id="priority"
+                  type="number"
+                  min="0"
+                  max="10"
+                  value={formData.priority}
+                  onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Maior prioridade = mais visibilidade
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="displayOrder">Ordem de Exibição</Label>
+                <Input
+                  id="displayOrder"
+                  type="number"
+                  min="0"
+                  value={formData.displayOrder}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Ordem de exibição entre anúncios com mesma prioridade
+                </p>
+              </div>
+
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1">
                   {editingAd ? 'Atualizar' : 'Criar'}
@@ -246,7 +315,7 @@ export default function AdsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -309,11 +378,12 @@ export default function AdsPage() {
                   <div className="flex items-center gap-4 flex-1">
                     {/* Preview */}
                     <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                      {ad.image ? (
+                      {getImageSource(ad.image) ? (
                         <img
-                          src={ad.image}
+                          src={ad.image!}
                           alt={ad.title}
                           className="w-full h-full object-cover"
+                          onError={() => handleImageError(ad.image!)}
                         />
                       ) : (
                         <Megaphone className="h-6 w-6 text-gray-400" />
@@ -327,6 +397,11 @@ export default function AdsPage() {
                         <Badge variant={ad.isActive ? "default" : "secondary"}>
                           {ad.isActive ? 'Ativo' : 'Inativo'}
                         </Badge>
+                        {ad.featured && (
+                          <Badge className="bg-yellow-500/90 text-white hover:bg-yellow-500">
+                            ⭐ Destaque
+                          </Badge>
+                        )}
                         {new Date(ad.validUntil) < new Date() && (
                           <Badge variant="destructive">Expirado</Badge>
                         )}
@@ -334,6 +409,8 @@ export default function AdsPage() {
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>Criado em: {formatDate(ad.createdAt)}</span>
                         <span>Válido até: {formatDate(ad.validUntil)}</span>
+                        <span>Prioridade: {ad.priority}</span>
+                        <span>Ordem: {ad.displayOrder}</span>
                         {ad.link && (
                           <span className="flex items-center gap-1">
                             <ExternalLink className="h-3 w-3" />

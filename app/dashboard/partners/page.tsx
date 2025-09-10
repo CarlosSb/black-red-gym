@@ -10,18 +10,21 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Edit, Trash2, Users, ExternalLink } from "lucide-react"
+import { Plus, Edit, Trash2, Users, ExternalLink, ImageOff } from "lucide-react"
 import { toast } from "sonner"
 
 interface Partner {
-  id: string
-  name: string
-  description: string
-  logo?: string
-  link?: string
-  category: string
-  isActive: boolean
-  createdAt: string
+   id: string
+   name: string
+   description: string
+   logo?: string
+   link?: string
+   category: string
+   isActive: boolean
+   featured: boolean
+   priority: number
+   displayOrder: number
+   createdAt: string
 }
 
 const categories = [
@@ -40,13 +43,17 @@ export default function PartnersPage() {
   const [loading, setLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPartner, setEditingPartner] = useState<Partner | null>(null)
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     logo: '',
     link: '',
     category: '',
-    isActive: true
+    isActive: true,
+    featured: false,
+    priority: 0,
+    displayOrder: 0
   })
 
   useEffect(() => {
@@ -110,7 +117,10 @@ export default function PartnersPage() {
       logo: partner.logo || '',
       link: partner.link || '',
       category: partner.category,
-      isActive: partner.isActive
+      isActive: partner.isActive,
+      featured: partner.featured,
+      priority: partner.priority,
+      displayOrder: partner.displayOrder
     })
     setIsDialogOpen(true)
   }
@@ -144,12 +154,34 @@ export default function PartnersPage() {
       logo: '',
       link: '',
       category: '',
-      isActive: true
+      isActive: true,
+      featured: false,
+      priority: 0,
+      displayOrder: 0
     })
   }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR')
+  }
+
+  const handleImageError = (imageUrl: string) => {
+    setImageErrors(prev => new Set(prev).add(imageUrl))
+  }
+
+  const getImageSource = (imageUrl?: string) => {
+    if (!imageUrl || imageErrors.has(imageUrl)) {
+      return null
+    }
+    return imageUrl
+  }
+
+  const getPartnerInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join('')
   }
 
   if (loading) {
@@ -161,7 +193,7 @@ export default function PartnersPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -265,6 +297,51 @@ export default function PartnersPage() {
                 <Label htmlFor="isActive">Ativo</Label>
               </div>
 
+              <div>
+                <Label htmlFor="featured">Destaque</Label>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Switch
+                    id="featured"
+                    checked={formData.featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, featured: checked })}
+                  />
+                  <Label htmlFor="featured" className="text-sm text-muted-foreground">
+                    Parceiro destacado (aparece com mais frequência)
+                  </Label>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="priority">Prioridade (0-10)</Label>
+                <Input
+                  id="priority"
+                  type="number"
+                  min="0"
+                  max="10"
+                  value={formData.priority}
+                  onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Maior prioridade = mais visibilidade
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="displayOrder">Ordem de Exibição</Label>
+                <Input
+                  id="displayOrder"
+                  type="number"
+                  min="0"
+                  value={formData.displayOrder}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Ordem de exibição entre parceiros com mesma prioridade
+                </p>
+              </div>
+
               <div className="flex gap-2 pt-4">
                 <Button type="submit" className="flex-1">
                   {editingPartner ? 'Atualizar' : 'Criar'}
@@ -283,7 +360,7 @@ export default function PartnersPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -346,14 +423,19 @@ export default function PartnersPage() {
                   <div className="flex items-center gap-4 flex-1">
                     {/* Logo */}
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center overflow-hidden">
-                      {partner.logo ? (
+                      {getImageSource(partner.logo) ? (
                         <img
-                          src={partner.logo}
+                          src={partner.logo!}
                           alt={partner.name}
                           className="w-full h-full object-cover"
+                          onError={() => handleImageError(partner.logo!)}
                         />
                       ) : (
-                        <Users className="h-6 w-6 text-blue-600" />
+                        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">
+                            {getPartnerInitials(partner.name)}
+                          </span>
+                        </div>
                       )}
                     </div>
 
@@ -362,6 +444,11 @@ export default function PartnersPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="font-semibold">{partner.name}</h3>
                         <Badge variant="outline">{partner.category}</Badge>
+                        {partner.featured && (
+                          <Badge className="bg-yellow-500/90 text-white hover:bg-yellow-500">
+                            ⭐ Destaque
+                          </Badge>
+                        )}
                         <Badge variant={partner.isActive ? "default" : "secondary"}>
                           {partner.isActive ? 'Ativo' : 'Inativo'}
                         </Badge>
@@ -371,6 +458,8 @@ export default function PartnersPage() {
                       </p>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>Criado em: {formatDate(partner.createdAt)}</span>
+                        <span>Prioridade: {partner.priority}</span>
+                        <span>Ordem: {partner.displayOrder}</span>
                         {partner.link && (
                           <span className="flex items-center gap-1">
                             <ExternalLink className="h-3 w-3" />

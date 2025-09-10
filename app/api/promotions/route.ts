@@ -34,9 +34,12 @@ async function verifyAdmin() {
 // GET /api/promotions - Listar promoções ativas (público)
 export async function GET(request: NextRequest) {
   try {
+    console.log('🚀 API /api/promotions chamada')
     const { searchParams } = new URL(request.url)
     const status = searchParams.get("status")
     const limit = parseInt(searchParams.get("limit") || "50")
+
+    console.log('📝 Parâmetros:', { status, limit })
 
     const where: any = {
       isActive: true
@@ -45,12 +48,18 @@ export async function GET(request: NextRequest) {
     // Se especificar status, incluir inativos também (para admin)
     if (status === "all") {
       delete where.isActive
+      console.log('👑 Modo admin: incluindo promoções inativas')
     }
 
-    // Filtrar apenas promoções não expiradas
-    where.validUntil = {
-      gte: new Date()
+    // Filtrar apenas promoções não expiradas (exceto para admin que quer ver todas)
+    if (status !== "all") {
+      where.validUntil = {
+        gte: new Date()
+      }
+      console.log('⏰ Filtrando apenas promoções válidas')
     }
+
+    console.log('🔍 Filtros aplicados:', where)
 
     const promotions = await prisma.promotion.findMany({
       where,
@@ -60,6 +69,9 @@ export async function GET(request: NextRequest) {
       take: limit
     })
 
+    console.log('📊 Promoções encontradas:', promotions.length)
+    console.log('📋 Promoções:', promotions.map(p => ({ id: p.id, title: p.title, isActive: p.isActive })))
+
     return NextResponse.json({
       success: true,
       promotions,
@@ -67,7 +79,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error("Erro ao buscar promoções:", error)
+    console.error("💥 Erro ao buscar promoções:", error)
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }

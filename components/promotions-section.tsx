@@ -82,10 +82,10 @@ export function PromotionsSection() {
 
   return (
     <section className="py-20 bg-gradient-to-br from-red-50 to-orange-50">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-red-accent/10 text-red-accent px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-red-500/10 text-red-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Gift className="h-4 w-4" />
             Promoções Ativas
           </div>
@@ -98,7 +98,7 @@ export function PromotionsSection() {
         </div>
 
         {/* Promotions Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {promotions.map((promotion) => (
             <Card
               key={promotion.id}
