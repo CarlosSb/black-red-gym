@@ -1,4 +1,7 @@
 {
+    "buildCommand": "pnpm run build",
+    "installCommand": "pnpm install",
+    "framework": "nextjs",
     "functions": {
         "app/api/**/*.ts": {
             "maxDuration": 10
@@ -7,8 +10,7 @@
     "regions": [
         "gru1"
     ],
-    "buildCommand": "npm run build",
-    "outputDirectory": ".next",
-    "framework": "nextjs",
-    "installCommand": "npm install"
+    "env": {
+        "NODE_ENV": "production"
+    }
 }
