@@ -728,6 +728,155 @@ async function main() {
     skipDuplicates: true,
   })
 
+  // 12. Criar base de conhecimento para o chatbot
+  console.log('🧠 Criando base de conhecimento...')
+
+  await prisma.knowledgeBase.createMany({
+    data: [
+      {
+        question: "Quais são os horários de funcionamento da academia?",
+        answer: "A Gym Starter funciona de segunda a sexta-feira das 5:30h às 23:00h, aos sábados das 7:00h às 20:00h e domingos das 8:00h às 18:00h. Temos horário estendido para atender todos os perfis de alunos!",
+        category: "horarios"
+      },
+      {
+        question: "Como faço para me matricular?",
+        answer: "Para se matricular na Gym Starter, você pode vir pessoalmente à academia ou fazer seu cadastro online através do nosso site. Oferecemos aulas experimentais gratuitas para você conhecer nossas instalações e modalidades antes de decidir.",
+        category: "matricula"
+      },
+      {
+        question: "Quais modalidades vocês oferecem?",
+        answer: "Oferecemos musculação completa, CrossFit, Pilates, aulas funcionais, spinning, dança, yoga e muito mais. Temos programas para todos os níveis, desde iniciantes até atletas avançados.",
+        category: "modalidades"
+      },
+      {
+        question: "Vocês têm personal trainer?",
+        answer: "Sim! Temos uma equipe de 15 personal trainers certificados e especializados. Oferecemos treinos personalizados, avaliação física completa e acompanhamento individual para alcançar seus objetivos.",
+        category: "personal"
+      },
+      {
+        question: "Qual o valor dos planos?",
+        answer: "Temos três planos principais: Basic (R$ 89,90), Premium (R$ 149,90) e VIP (R$ 249,90). Cada plano oferece benefícios diferentes, incluindo musculação, aulas especiais e acompanhamento personalizado. Consulte nossas promoções atuais!",
+        category: "planos"
+      },
+      {
+        question: "Como funciona o check-in?",
+        answer: "Para fazer check-in, use o QR Code disponível no aplicativo ou gere um novo código na recepção. Basta escanear o código na entrada e você terá acesso liberado automaticamente.",
+        category: "checkin"
+      },
+      {
+        question: "Vocês oferecem avaliação física?",
+        answer: "Sim! Todas as matrículas incluem avaliação física completa realizada por nossos profissionais especializados. Avaliamos composição corporal, condicionamento físico e elaboramos um plano personalizado.",
+        category: "avaliacao"
+      },
+      {
+        question: "Como funciona o sistema de indicações?",
+        answer: "Nosso programa de indicações é simples: indique um amigo e ambos ganham benefícios! O indicado recebe desconto na matrícula e você ganha um mês grátis quando a indicação se concretiza.",
+        category: "indicacoes"
+      },
+      {
+        question: "Vocês têm estacionamento?",
+        answer: "Sim, oferecemos estacionamento gratuito e seguro para todos os alunos. Temos vagas cobertas e monitoramento 24 horas para sua tranquilidade.",
+        category: "instalacoes"
+      },
+      {
+        question: "Como funciona o cancelamento de matrícula?",
+        answer: "Para cancelar sua matrícula, é necessário comunicar com antecedência mínima de 30 dias. Entre em contato conosco pelo telefone (85) 99999-9999 ou visite nossa unidade para orientações sobre o processo.",
+        category: "cancelamento"
+      },
+      {
+        question: "Vocês têm vestiários e chuveiros?",
+        answer: "Sim! Temos vestiários completos com armários individuais, chuveiros quentes, secadores de cabelo, produtos de higiene e todas as comodidades para você se sentir à vontade antes e depois dos treinos.",
+        category: "instalacoes"
+      },
+      {
+        question: "Como funciona o agendamento de aulas?",
+        answer: "Você pode agendar aulas através do nosso aplicativo, site ou diretamente na recepção. Temos aulas coletivas e particulares disponíveis. Recomendamos agendar com antecedência para garantir sua vaga.",
+        category: "agendamento"
+      },
+      {
+        question: "Vocês oferecem desconto para estudantes?",
+        answer: "Sim! Oferecemos desconto especial para estudantes com carteirinha válida. O desconto é de 25% no plano semestral. Entre em contato conosco para verificar a documentação necessária.",
+        category: "descontos"
+      },
+      {
+        question: "Como funciona o plano família?",
+        answer: "No plano família, o primeiro familiar paga o valor integral e os demais recebem desconto progressivo: 20% para o segundo e 30% para o terceiro familiar. Ideal para manter toda a família ativa!",
+        category: "planos"
+      },
+      {
+        question: "Vocês têm aulas para idosos?",
+        answer: "Sim! Temos programas especiais para terceira idade com aulas de alongamento, pilates suave, hidroginástica e musculação adaptada. Todas as aulas são supervisionadas por profissionais especializados.",
+        category: "modalidades"
+      },
+      {
+        question: "Como funciona o acompanhamento nutricional?",
+        answer: "Oferecemos consultoria nutricional através dos nossos parceiros especializados. No plano VIP, a nutricionista está incluída. Avaliamos seus hábitos alimentares e elaboramos um plano personalizado.",
+        category: "nutricao"
+      },
+      {
+        question: "Vocês têm aulas experimentais?",
+        answer: "Sim! Oferecemos aulas experimentais gratuitas em todas as modalidades. É uma ótima oportunidade para conhecer nossos professores, equipamentos e ambiente antes de se matricular.",
+        category: "modalidades"
+      },
+      {
+        question: "Como funciona o sistema de lockers?",
+        answer: "Temos lockers individuais disponíveis gratuitamente para todos os alunos. Você pode guardar seus pertences com segurança durante os treinos. Basta solicitar na recepção.",
+        category: "instalacoes"
+      },
+      {
+        question: "Vocês têm área de recuperação muscular?",
+        answer: "Sim! Temos sala de recuperação com equipamentos de massagem, alongamento e crioterapia. Também oferecemos massagens terapêuticas através dos nossos parceiros especializados.",
+        category: "instalacoes"
+      },
+      {
+        question: "Como funciona o programa de fidelidade?",
+        answer: "Quanto mais você treina, mais benefícios ganha! A cada 10 check-ins, você ganha uma aula experimental grátis. Clientes fiéis também têm prioridade em agendamentos e eventos especiais.",
+        category: "beneficios"
+      },
+      {
+        question: "Vocês têm aulas de dança?",
+        answer: "Sim! Oferecemos aulas de dança como zumba, dança do ventre, salsa e muito mais. São aulas divertidas e excelentes para queima calórica e coordenação motora.",
+        category: "modalidades"
+      },
+      {
+        question: "Como funciona o acompanhamento de progresso?",
+        answer: "Acompanhamos seu progresso através de avaliações periódicas, medição de composição corporal, testes de condicionamento e fotos comparativas. Você recebe relatórios detalhados do seu desenvolvimento.",
+        category: "acompanhamento"
+      },
+      {
+        question: "Vocês têm equipamentos para pessoas com deficiência?",
+        answer: "Sim! Temos equipamentos adaptados e oferecemos aulas especiais para pessoas com deficiência. Nossos profissionais são capacitados para atender diferentes necessidades especiais.",
+        category: "acessibilidade"
+      },
+      {
+        question: "Como funciona o sistema de reservas de equipamentos?",
+        answer: "Equipamentos específicos como esteiras e bikes podem ser reservados através do aplicativo ou na recepção. A reserva tem duração máxima de 30 minutos para garantir que todos tenham acesso.",
+        category: "equipamentos"
+      },
+      {
+        question: "Vocês oferecem suplementação?",
+        answer: "Temos parceria com lojas especializadas em suplementos. Oferecemos desconto exclusivo para alunos e orientação profissional sobre suplementação adequada aos seus objetivos.",
+        category: "suplementos"
+      },
+      {
+        question: "Como funciona o horário de pico?",
+        answer: "Durante horários de pico (7h-9h e 17h-19h), alguns equipamentos podem ter maior demanda. Recomendamos agendar seus treinos fora desses horários para melhor experiência.",
+        category: "horarios"
+      },
+      {
+        question: "Vocês têm programa para emagrecimento?",
+        answer: "Sim! Temos programas completos de emagrecimento que incluem treinos específicos, acompanhamento nutricional e orientação profissional. Resultados comprovados com metodologia científica.",
+        category: "programas"
+      },
+      {
+        question: "Como funciona o sistema de avaliação de aulas?",
+        answer: "Após cada aula, você pode avaliar o professor e a experiência através do aplicativo. Seu feedback nos ajuda a manter a qualidade e melhorar continuamente nossos serviços.",
+        category: "feedback"
+      }
+    ],
+    skipDuplicates: true,
+  })
+
   console.log('🎉 Seed concluído com sucesso!')
   console.log('📊 Dados criados:')
   console.log(`   👥 ${4} usuários`)
@@ -741,6 +890,7 @@ async function main() {
   console.log(`   🎁 ${12} promoções`)
   console.log(`   🤝 ${16} parceiros`)
   console.log(`   📢 ${10} anúncios`)
+  console.log(`   🧠 ${25} entradas de knowledge base`)
   console.log('')
   console.log('🔐 Credenciais de acesso:')
   console.log('   Admin: admin@gymstarter.com.br / 123456')
