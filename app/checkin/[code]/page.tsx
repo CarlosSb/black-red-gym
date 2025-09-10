@@ -137,7 +137,7 @@ export default function CheckinPage() {
             <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
             <CardTitle className="text-green-600">Check-in Realizado!</CardTitle>
             <CardDescription>
-              Bem-vindo à Black Red Gym! Seu check-in foi registrado com sucesso.
+              Bem-vindo à Gym Starter! Seu check-in foi registrado com sucesso.
             </CardDescription>
           </CardHeader>
           <CardContent>

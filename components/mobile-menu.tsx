@@ -52,7 +52,7 @@ export function MobileMenu({ settings }: MobileMenuProps) {
   }
 
   const handleWhatsAppClick = () => {
-    window.open(`https://wa.me/${settings.whatsapp || '5511999999999'}?text=Olá! Gostaria de me matricular na Black Red Academia.`, '_blank')
+    window.open(`https://wa.me/${settings.whatsapp || '5511999999999'}?text=Olá! Gostaria de me matricular na ${settings.name || 'Gym Starter'}.`, '_blank')
     setIsOpen(false)
   }
 

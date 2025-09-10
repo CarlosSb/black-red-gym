@@ -118,13 +118,45 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Generate unique code with collision detection
+    let uniqueCode
+    let attempts = 0
+    do {
+      const year = new Date().getFullYear()
+      const randomString = Math.random().toString(36).substring(2, 8).toUpperCase()
+      uniqueCode = `PROMO-${year}-${randomString}`
+      attempts++
+      if (attempts > 10) {
+        return NextResponse.json(
+          { error: "Erro ao gerar código único. Tente novamente." },
+          { status: 500 }
+        )
+      }
+    } while (await prisma.promotion.findUnique({ where: { uniqueCode } }))
+
+    // Generate shortened URL code with collision detection
+    let shortCode
+    attempts = 0
+    do {
+      shortCode = Math.random().toString(36).substring(2, 8)
+      attempts++
+      if (attempts > 10) {
+        return NextResponse.json(
+          { error: "Erro ao gerar código curto. Tente novamente." },
+          { status: 500 }
+        )
+      }
+    } while (await prisma.promotion.findUnique({ where: { shortCode } }))
+
     const promotion = await prisma.promotion.create({
       data: {
         title: title.trim(),
         description: description.trim(),
         image: image?.trim(),
         validUntil: validUntilDate,
-        isActive: true
+        isActive: true,
+        uniqueCode,
+        shortCode
       }
     })
 

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { MessageCircle, X, Send, Phone, RefreshCw, AlertCircle } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import DataService from "@/lib/data-service"
+import { useAcademySettings } from "@/hooks/use-academy-settings"
 
 interface Message {
   id: string
@@ -16,6 +17,7 @@ interface Message {
 
 export function ChatFlutuante() {
   const { isAuthenticated, user } = useAuth()
+  const { settings } = useAcademySettings()
   const [isVisible, setIsVisible] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
@@ -622,7 +624,7 @@ export function ChatFlutuante() {
         )
 
         // Personalizar mensagem do WhatsApp baseada no contexto
-        let whatsappMessage = "Olá! Gostaria de mais informações sobre a Black Red Academia"
+        let whatsappMessage = `Olá! Gostaria de mais informações sobre a ${settings?.name || 'Gym Starter'}`
 
         if (conversationHistory.includes('agendar') || conversationHistory.includes('marcar')) {
           whatsappMessage = "Olá! Gostaria de agendar uma aula experimental"

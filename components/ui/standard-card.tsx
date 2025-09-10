@@ -17,6 +17,7 @@ interface StandardCardProps {
   tabIndex?: number
   'aria-label'?: string
   onKeyDown?: (event: React.KeyboardEvent) => void
+  maxHeight?: number
 }
 
 const StandardCard = forwardRef<HTMLDivElement, StandardCardProps>(({
@@ -31,6 +32,7 @@ const StandardCard = forwardRef<HTMLDivElement, StandardCardProps>(({
   tabIndex,
   'aria-label': ariaLabel,
   onKeyDown,
+  maxHeight,
   ...props
 }, ref) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -52,6 +54,9 @@ const StandardCard = forwardRef<HTMLDivElement, StandardCardProps>(({
       'max-w-md': size === 'md',
       'max-w-lg': size === 'lg',
     },
+
+    // Max height
+    maxHeight ? `max-h-[${maxHeight}px] overflow-hidden` : '',
 
     // Interactive states
     {
@@ -89,7 +94,7 @@ const StandardCard = forwardRef<HTMLDivElement, StandardCardProps>(({
     return (
       <Card
         ref={ref}
-        className={cardClasses}
+        className={`${cardClasses} py-0`}
         role={role || "button"}
         tabIndex={tabIndex ?? 0}
         aria-label={ariaLabel}

@@ -11,7 +11,7 @@ interface MatriculeSeButtonProps {
 
 export function MatriculeSeButton({ settings, className, children }: MatriculeSeButtonProps) {
   const handleClick = () => {
-    window.open(`https://wa.me/${settings.whatsapp || '5511999999999'}?text=Olá! Gostaria de me matricular na Black Red Academia.`, '_blank')
+    window.open(`https://wa.me/${settings.whatsapp || '5511999999999'}?text=Olá! Gostaria de me matricular na ${settings.name || 'Gym Starter'}.`, '_blank')
   }
 
   return (

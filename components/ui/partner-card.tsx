@@ -51,7 +51,7 @@ export function PartnerCard({ partner, onClick, className }: PartnerCardProps) {
       featured={partner.featured}
       interactive={!!partner.link}
       onClick={handleClick}
-      className={className}
+      className={`${className}`}
       aria-label={`Parceiro: ${partner.name}. Categoria: ${partner.category}. ${partner.link ? 'Link disponível' : 'Sem link'}`}
     >
       <div className="p-6 text-center">
@@ -92,18 +92,12 @@ export function PartnerCard({ partner, onClick, className }: PartnerCardProps) {
 
         {/* Link Indicator */}
         {partner.link && (
-          <div className="flex items-center justify-center gap-1 text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-center gap-1 text-xs text-blue-600 ">
             <ExternalLink className="h-3 w-3" />
             <span className="font-medium">Visitar site</span>
           </div>
         )}
 
-        {/* Priority Indicator (for admin/debug) */}
-        {partner.priority && partner.priority > 0 && (
-          <div className="mt-2 text-xs text-muted-foreground">
-            Prioridade: {partner.priority}
-          </div>
-        )}
       </div>
     </StandardCard>
   )

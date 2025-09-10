@@ -50,7 +50,7 @@ export function CheckInModal({ children }: CheckInModalProps) {
         setIsSuccess(true)
         toast({
           title: "Check-in realizado!",
-          description: "Bem-vindo à Black Red Academia!",
+          description: "Bem-vindo à Gym Starter!",
         })
 
         // Reset form after 2 seconds
@@ -115,7 +115,7 @@ export function CheckInModal({ children }: CheckInModalProps) {
             <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
             <h3 className="text-lg font-semibold mb-2">Check-in Realizado!</h3>
             <p className="text-muted-foreground">
-              Bem-vindo à Black Red Academia, {formData.name}!
+              Bem-vindo à Gym Starter, {formData.name}!
             </p>
           </div>
         ) : (

@@ -64,7 +64,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-        <p className="text-muted-foreground">Bem-vindo ao painel administrativo da Black Red Academia</p>
+        <p className="text-muted-foreground">Bem-vindo ao painel administrativo da Gym Starter</p>
       </div>
 
       {/* Stats Grid */}

@@ -108,7 +108,7 @@ export function ReferralModal({ children }: ReferralModalProps) {
             Indicar um Amigo
           </DialogTitle>
           <DialogDescription>
-            Indique um amigo para conhecer a Black Red Gym e ganhe benefícios!
+            Indique um amigo para conhecer a Gym Starter e ganhe benefícios!
           </DialogDescription>
         </DialogHeader>
 

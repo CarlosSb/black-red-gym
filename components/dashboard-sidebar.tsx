@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dumbbell, LayoutDashboard, CreditCard, MessageSquare, Settings, LogOut, Menu, X, Calendar, Info, Bot, Gift, Users, Megaphone, ChevronDown, ChevronRight } from "lucide-react"
 import { useAuth } from "@/contexts/auth-context"
 import { cn } from "@/lib/utils"
+import { useAcademySettings } from "@/hooks/use-academy-settings"
 
 const navigationGroups = [
   {
@@ -42,6 +43,7 @@ export function DashboardSidebar() {
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const { settings } = useAcademySettings()
 
   // Estado inicial - sempre começa com todas as seções fechadas
   const [expandedSections, setExpandedSections] = useState({
@@ -115,7 +117,7 @@ export function DashboardSidebar() {
       {/* Header */}
       <div className="flex items-center gap-3 p-6 border-b border-white/10">
         <Dumbbell className="h-6 w-6 text-red-500" />
-        <h1 className="text-lg font-bold tracking-wide">BLACK RED</h1>
+        <h1 className="text-lg font-bold tracking-wide">{settings?.name?.toUpperCase() || "GYM STARTER"}</h1>
       </div>
 
       {/* User Info */}

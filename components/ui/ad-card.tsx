@@ -40,7 +40,12 @@ export function AdCard({ ad, onClick, className }: AdCardProps) {
 
   const handleClick = () => {
     if (ad.link) {
-      window.open(ad.link, '_blank', 'noopener,noreferrer')
+      try {
+        new URL(ad.link) // Validate URL
+        window.open(ad.link, '_blank', 'noopener,noreferrer')
+      } catch (error) {
+        console.error('Invalid URL detected:', ad.link, error)
+      }
     }
     onClick?.()
   }
@@ -53,10 +58,10 @@ export function AdCard({ ad, onClick, className }: AdCardProps) {
       interactive={!!ad.link}
       onClick={handleClick}
       className={className}
-      aria-label={`Anúncio: ${ad.title}. ${ad.isActive ? 'Ativo' : 'Inativo'}. ${isExpired ? 'Expirado' : `Válido até ${formatDate(ad.validUntil)}`}`}
+      aria-label={`Anúncio: ${ad.title}. ${ad.isActive ? 'Ativo' : 'Inativo'}. ${isExpired ? 'Expirado' : `Válido até ${formatDate(ad.validUntil)}`}${ad.link ? '. Com link externo.' : ''}`}
     >
       {/* Image Section - Compact */}
-      <div className="relative h-32 bg-gradient-to-br from-purple-500 to-purple-600 overflow-hidden">
+      <div className="relative h-40 bg-gradient-to-br from-purple-500 to-purple-600 overflow-hidden">
         {ad.image && !imageError ? (
           <Image
             src={ad.image}
@@ -65,6 +70,7 @@ export function AdCard({ ad, onClick, className }: AdCardProps) {
             className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
             onError={() => setImageError(true)}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            style={{ objectFit: 'cover' }}
           />
         ) : (
           <div className="flex items-center justify-center h-full">
@@ -105,18 +111,12 @@ export function AdCard({ ad, onClick, className }: AdCardProps) {
 
         {/* Link Indicator */}
         {ad.link && (
-          <div className="flex items-center justify-center gap-1 text-xs text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center justify-center gap-1 text-xs text-purple-600 ">
             <ExternalLink className="h-3 w-3" />
             <span className="font-medium">Saiba mais</span>
           </div>
         )}
 
-        {/* Priority Indicator (for admin/debug) */}
-        {ad.priority && ad.priority > 0 && (
-          <div className="mt-3 text-xs text-muted-foreground text-center">
-            Prioridade: {ad.priority}
-          </div>
-        )}
       </div>
     </StandardCard>
   )

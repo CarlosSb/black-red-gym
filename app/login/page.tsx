@@ -3,15 +3,18 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dumbbell } from "lucide-react"
 import { LoginForm } from "./login-form"
+import { getServerSettings } from "@/lib/server-data"
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const settings = await getServerSettings()
+
   return (
     <div className="min-h-screen bg-black-red flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Dumbbell className="h-8 w-8 text-red-accent" />
-            <h1 className="text-2xl font-bold">BLACK RED</h1>
+            <h1 className="text-2xl font-bold">{settings?.name?.toUpperCase() || "GYM STARTER"}</h1>
           </div>
           <CardTitle className="text-2xl">Entrar na sua conta</CardTitle>
           <CardDescription>Digite suas credenciais para acessar o painel</CardDescription>

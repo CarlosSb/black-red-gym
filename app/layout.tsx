@@ -5,13 +5,18 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { AuthProvider } from "@/contexts/auth-context"
+import { getServerSettings } from "@/lib/server-data"
 import "./globals.css"
 
-export const metadata: Metadata = {
-  title: "Black Red Academia - Transforme seu Corpo, Transforme sua Vida",
-  description:
-    "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador. Venha fazer parte da família Black Red!",
-  generator: "v0.app",
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getServerSettings()
+  const academyName = settings.name || "Gym Starter"
+
+  return {
+    title: `${academyName} - Transforme seu Corpo, Transforme sua Vida`,
+    description: `Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador. Venha fazer parte da família ${academyName}!`,
+    generator: "v0.app",
+  }
 }
 
 export default function RootLayout({

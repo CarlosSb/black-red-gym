@@ -142,7 +142,7 @@ export default function StudentDashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Meu Painel</h1>
-              <p className="text-white/70">Bem-vindo à Black Red Gym!</p>
+              <p className="text-white/70">Bem-vindo à Gym Starter!</p>
             </div>
             <Button
               variant="outline"

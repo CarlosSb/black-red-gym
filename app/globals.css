@@ -129,19 +129,19 @@
 
 /* Adding custom utility classes for GymStarter branding */
 .bg-black-red {
-  background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
+  background: linear-gradient(135deg, var(--black-red, #000000) 0%, var(--black-red-dark, #1a0000) 100%);
 }
 
 .text-red-accent {
-  color: oklch(0.6 0.25 25);
+  color: var(--red-accent, oklch(0.6 0.25 25));
 }
 
 .border-red-accent {
-  border-color: oklch(0.6 0.25 25);
+  border-color: var(--red-accent, oklch(0.6 0.25 25));
 }
 
 .bg-red-accent {
-  background-color: oklch(0.6 0.25 25);
+  background-color: var(--red-accent, oklch(0.6 0.25 25));
 }
 
 /* Carousel Animation */
@@ -167,4 +167,43 @@
   .animate-carousel {
     animation: none;
   }
+}
+
+/* Hide scrollbar for carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Line clamp utilities */
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-4 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+}
+
+.line-clamp-5 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.line-clamp-none {
+  overflow: visible;
+  display: block;
+  -webkit-box-orient: horizontal;
+  -webkit-line-clamp: none;
 }

@@ -51,7 +51,7 @@ export function PlanSelectionModal({ plan, children }: PlanSelectionModalProps) 
 
     // Criar mensagem personalizada para WhatsApp
     const message = encodeURIComponent(
-      `Olá! Gostaria de me matricular no plano *${plan.name}* da Black Red Academia.\n\n` +
+      `Olá! Gostaria de me matricular no plano *${plan.name}* da ${settings.name || 'Gym Starter'}.\n\n` +
       `📋 *Detalhes do Plano:*\n` +
       `• Nome: ${plan.name}\n` +
       `• Valor: R$ ${plan.price}/mês\n` +
@@ -66,7 +66,7 @@ export function PlanSelectionModal({ plan, children }: PlanSelectionModalProps) 
 
     toast({
       title: "Redirecionando para WhatsApp",
-      description: `Abrindo conversa com a Black Red Academia sobre o plano ${plan.name}.`,
+      description: `Abrindo conversa com a ${settings.name || 'Gym Starter'} sobre o plano ${plan.name}.`,
     })
 
     setIsOpen(false)

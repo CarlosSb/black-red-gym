@@ -15,6 +15,8 @@ import { PlanSelectionModal } from "@/components/plan-selection-modal"
 import { UnifiedContentSection } from "@/components/unified-content-section"
 import { AdsBanner } from "@/components/ads-banner"
 import { TestimonialCard } from "@/components/ui/testimonial-card"
+import { TestimonialsCarousel } from "@/components/testimonials-carousel"
+import { useTestimonials } from "@/hooks/use-testimonials"
 
 async function HomePageContent() {
   // Fetch settings from API
@@ -31,9 +33,16 @@ async function HomePageContent() {
   const plansData = await plansResponse.json()
   const plans = plansData.success ? plansData.plans : []
 
+  // Fetch testimonials from API
+  const testimonialsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/testimonials?active=true&limit=10`, {
+    cache: 'no-store'
+  })
+  const testimonialsData = await testimonialsResponse.json()
+  const testimonials = testimonialsData.success ? testimonialsData.testimonials : []
+
   // Fallback settings if API fails
   const defaultSettings = {
-    name: "Black Red Academia",
+    name: "Gym Starter",
     description: "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
     phone: "(11) 99999-9999",
     email: "contato@gymstarter.com.br",
@@ -46,7 +55,8 @@ async function HomePageContent() {
     },
     colors: {
       primary: "#DC2626",
-      secondary: "#000000"
+      secondary: "#000000",
+      accent: "#DC2626"
     },
     notifications: {
       newMessages: true,
@@ -55,12 +65,12 @@ async function HomePageContent() {
       weeklyReports: false
     },
     logo: "/placeholder-logo.png",
-    about: "Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino. Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos, seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.",
+    about: "Fundada em 2024, a Gym Starter nasceu com o propósito de revolucionar o conceito de academia. Combinamos tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino. Nossa equipe de profissionais qualificados está sempre pronta para te ajudar a alcançar seus objetivos, seja ganho de massa muscular, perda de peso ou melhoria do condicionamento físico.",
     heroTitle: "TRANSFORME SEU CORPO",
     heroSubtitle: "Nova Academia",
     heroImage: "/modern-gym-interior-with-red-and-black-equipment.jpg",
     features: {
-      title: "Por que escolher a Black Red?",
+      title: "Por que escolher a Gym Starter?",
       description: "Oferecemos tudo que você precisa para alcançar seus objetivos fitness",
       items: [
         {
@@ -356,7 +366,7 @@ async function HomePageContent() {
             <div className="bg-black-red rounded-lg p-8 text-white">
               <img
                 src="/modern-gym-interior-with-red-and-black-equipment.jpg"
-                alt="Interior da academia Black Red"
+                alt={`Interior da academia ${finalSettings.name}`}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
               <h4 className="text-xl font-bold mb-4">Ambiente Motivador</h4>
@@ -379,73 +389,58 @@ async function HomePageContent() {
             </p>
           </div>
 
-          {/* Carousel Container */}
-          <div className="relative overflow-hidden">
-            <div className="flex gap-8 animate-carousel">
-              {/* Testimonial 1 */}
-              <TestimonialCard
-                testimonial={{
-                  id: "testimonial-1",
-                  name: "João Silva",
-                  content: "A BlackRed Fix transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados. Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!",
-                  rating: 5,
-                  category: "Perda de Peso",
-                  isActive: true,
-                  createdAt: "2024-01-15T10:00:00Z"
-                }}
-                className="flex-shrink-0 w-full md:w-1/3"
-              />
-
-              {/* Testimonial 2 */}
-              <TestimonialCard
-                testimonial={{
-                  id: "testimonial-2",
-                  name: "Maria Santos",
-                  content: "Excelente academia! Os equipamentos são modernos e sempre bem cuidados. As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.",
-                  rating: 5,
-                  category: "Condicionamento",
-                  isActive: true,
-                  createdAt: "2024-02-20T14:30:00Z"
-                }}
-                className="flex-shrink-0 w-full md:w-1/3"
-              />
-
-              {/* Testimonial 3 */}
-              <TestimonialCard
-                testimonial={{
-                  id: "testimonial-3",
-                  name: "Pedro Costa",
-                  content: "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar. Recomendo para todos que querem mudar de vida através do fitness.",
-                  rating: 5,
-                  category: "Ganho de Massa",
-                  isActive: true,
-                  createdAt: "2024-03-10T09:15:00Z"
-                }}
-                className="flex-shrink-0 w-full md:w-1/3"
-              />
-
-              {/* Testimonial 4 (Duplicate for seamless loop) */}
-              <TestimonialCard
-                testimonial={{
-                  id: "testimonial-4",
-                  name: "João Silva",
-                  content: "A Black Red transformou minha rotina de treinos. Os profissionais são incríveis e o ambiente é motivador. Perdi 15kg em 6 meses e me sinto muito mais confiante!",
-                  rating: 5,
-                  category: "Transformação",
-                  isActive: true,
-                  createdAt: "2024-01-15T10:00:00Z"
-                }}
-                className="flex-shrink-0 w-full md:w-1/3"
-              />
-            </div>
-          </div>
-
-          {/* Carousel Navigation Dots */}
-          <div className="flex justify-center mt-8 gap-2">
-            <div className="w-3 h-3 rounded-full bg-red-accent"></div>
-            <div className="w-3 h-3 rounded-full bg-muted-foreground/30"></div>
-            <div className="w-3 h-3 rounded-full bg-muted-foreground/30"></div>
-          </div>
+          {/* Interactive Carousel */}
+          <TestimonialsCarousel
+            testimonials={testimonials.length > 0 ? testimonials : [
+              {
+                id: "testimonial-1",
+                name: "João Silva",
+                content: `A ${finalSettings.name} transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados. Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!`,
+                rating: 5,
+                category: "Perda de Peso",
+                isActive: true,
+                createdAt: "2024-01-15T10:00:00Z"
+              },
+              {
+                id: "testimonial-2",
+                name: "Maria Santos",
+                content: "Excelente academia! Os equipamentos são modernos e sempre bem cuidados. As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.",
+                rating: 5,
+                category: "Condicionamento",
+                isActive: true,
+                createdAt: "2024-02-20T14:30:00Z"
+              },
+              {
+                id: "testimonial-3",
+                name: "Pedro Costa",
+                content: "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar. Recomendo para todos que querem mudar de vida através do fitness.",
+                rating: 5,
+                category: "Ganho de Massa",
+                isActive: true,
+                createdAt: "2024-03-10T09:15:00Z"
+              },
+              {
+                id: "testimonial-4",
+                name: "Ana Oliveira",
+                content: "Ambiente incrível e professores muito dedicados! As aulas de dança são sensacionais e me ajudam a manter a forma de forma divertida. Já indiquei para várias amigas!",
+                rating: 5,
+                category: "Dança e Fitness",
+                isActive: true,
+                createdAt: "2024-04-05T11:45:00Z"
+              },
+              {
+                id: "testimonial-5",
+                name: "Carlos Mendes",
+                content: `A ${finalSettings.name} superou todas as minhas expectativas! Em apenas 3 meses consegui definir o abdômen e ganhar força. O acompanhamento personalizado faz toda a diferença.`,
+                rating: 5,
+                category: "Definição Muscular",
+                isActive: true,
+                createdAt: "2024-05-12T16:20:00Z"
+              }
+            ]}
+            autoPlay={true}
+            autoPlayInterval={6000}
+          />
         </div>
       </section>
 

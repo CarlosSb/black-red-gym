@@ -476,7 +476,7 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5" />
-              Seção &ldquo;Por que escolher a Black Red&rdquo;
+              Seção &ldquo;Por que escolher a Gym Starter&rdquo;
             </CardTitle>
             <CardDescription>Configure os itens de destaque da academia</CardDescription>
           </CardHeader>
@@ -493,7 +493,7 @@ export default function SettingsPage() {
                     title: e.target.value 
                   } 
                 })}
-                placeholder="Ex: Por que escolher a Black Red?"
+                placeholder="Ex: Por que escolher a Gym Starter?"
               />
             </div>
 

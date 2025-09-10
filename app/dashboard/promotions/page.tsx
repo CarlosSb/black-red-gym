@@ -19,6 +19,9 @@ interface Promotion {
   image?: string
   validUntil: string
   isActive: boolean
+  uniqueCode?: string
+  shortCode?: string
+  accessCount: number
   createdAt: string
 }
 
@@ -268,7 +271,7 @@ export default function PromotionsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -304,6 +307,20 @@ export default function PromotionsPage() {
                   {promotions.filter(p => new Date(p.validUntil) > new Date()).length}
                 </p>
                 <p className="text-sm text-muted-foreground">Válidas</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <EyeOff className="h-8 w-8 text-purple-600" />
+              <div>
+                <p className="text-2xl font-bold">
+                  {promotions.reduce((acc, p) => acc + p.accessCount, 0)}
+                </p>
+                <p className="text-sm text-muted-foreground">Acessos via Links Únicos</p>
               </div>
             </div>
           </CardContent>
@@ -344,6 +361,13 @@ export default function PromotionsPage() {
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span>Criado em: {formatDate(promotion.createdAt)}</span>
                       <span>Válido até: {formatDate(promotion.validUntil)}</span>
+                      {promotion.uniqueCode && (
+                        <span>Código: {promotion.uniqueCode}</span>
+                      )}
+                      {promotion.shortCode && (
+                        <span>Short URL: /promo/{promotion.shortCode}</span>
+                      )}
+                      <span className="font-medium">Acessos: {promotion.accessCount}</span>
                     </div>
                   </div>
 

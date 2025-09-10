@@ -12,11 +12,11 @@ async function main() {
   const hashedPassword = await bcrypt.hash('123456', 10)
 
   const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@blackredfit.com.br' },
+    where: { email: 'admin@gymstarter.com.br' },
     update: {},
     create: {
       email: 'admin@gymstarter.com.br',
-      name: 'Administrador GymStarter',
+      name: 'Administrador',
       password: hashedPassword,
       role: 'ADMIN',
     },
@@ -63,7 +63,7 @@ async function main() {
     update: {},
     create: {
       id: 'main-settings',
-      name: 'BlackRed Fit',
+      name: 'Gym Starter',
       description: 'Academia completa especializada em musculação, crossfit, pilates e aulas funcionais. Com equipamentos de última geração, profissionais qualificados e ambiente motivador para alcançar seus objetivos fitness. Localizada no coração de Fortaleza, oferecemos horários estendidos e atendimento personalizado.',
       phone: '(85) 99999-9999',
       email: 'contato@gymstarter.com.br',
@@ -400,6 +400,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-01-31'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-JAN',
       },
       {
         title: 'Plano Família',
@@ -407,6 +408,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-03-31'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-FAM',
       },
       {
         title: 'Black Friday Fitness',
@@ -414,6 +416,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-11-30'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-BF',
       },
       {
         title: 'Dia dos Namorados Fitness',
@@ -421,6 +424,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-06-12'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-LOVE',
       },
       {
         title: 'Verão em Forma',
@@ -428,6 +432,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-12-20'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-SUMMER',
       },
       {
         title: 'Estudante BlackRed',
@@ -435,6 +440,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-12-31'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-STUDENT',
       },
       {
         title: 'Carnaval Fitness',
@@ -442,6 +448,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-02-15'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-CARNIVAL',
       },
       {
         title: 'Dia das Mães Fitness',
@@ -449,6 +456,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-05-11'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-MOTHERS',
       },
       {
         title: 'Páscoa Saudável',
@@ -456,6 +464,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-04-20'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-EASTER',
       },
       {
         title: 'Tire suas Férias em Forma',
@@ -463,6 +472,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-12-31'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-VACATION',
       },
       {
         title: 'Indique e Ganhe',
@@ -470,6 +480,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-12-31'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-REFER',
       },
       {
         title: 'Aniversário BlackRed',
@@ -477,6 +488,7 @@ async function main() {
         image: '/placeholder.jpg',
         validUntil: new Date('2025-03-15'),
         isActive: true,
+        uniqueCode: 'PROMO-2025-BDAY',
       },
     ],
     skipDuplicates: true,

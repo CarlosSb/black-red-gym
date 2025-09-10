@@ -317,7 +317,7 @@ export default function AboutManagementPage() {
         </CardHeader>
         <CardContent>
           <div className="bg-muted/30 rounded-lg p-6">
-            <h3 className="text-2xl font-bold mb-4">Sobre a Black Red</h3>
+            <h3 className="text-2xl font-bold mb-4">Sobre a Gym Starter</h3>
             <p className="text-muted-foreground mb-6 line-clamp-3">
               {aboutData.about || "Texto da seção Sobre aparecerá aqui..."}
             </p>

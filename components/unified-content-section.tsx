@@ -9,6 +9,14 @@ import Image from "next/image"
 import { PromotionCard } from "./ui/promotion-card"
 import { PartnerCard } from "./ui/partner-card"
 import { AdCard } from "./ui/ad-card"
+import { SocialShareButtons } from "./ui/social-share-buttons"
+import {
+  generatePromotionMessage,
+  generateAdMessage,
+  generateWhatsAppUrl,
+  shareContent,
+  copyToClipboard
+} from "@/lib/utils"
 
 interface Promotion {
   id: string
@@ -117,6 +125,58 @@ export function UnifiedContentSection() {
     })
   }
 
+  const handlePromotionWhatsApp = (promotion: any) => {
+    const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511999999999'
+    const message = generatePromotionMessage(promotion)
+    const whatsappUrl = generateWhatsAppUrl(phone, message)
+
+    // Rastreamento
+    console.log('WhatsApp promotion click:', promotion.id)
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleAdWhatsApp = (ad: any) => {
+    const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '5511999999999'
+    const message = generateAdMessage(ad)
+    const whatsappUrl = generateWhatsAppUrl(phone, message)
+
+    // Rastreamento
+    console.log('WhatsApp ad click:', ad.id)
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleSharePromotion = async (promotion: any) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+    const url = `${baseUrl}/promotion/${promotion.id}`
+    const success = await shareContent({
+      title: promotion.title,
+      text: promotion.description,
+      url
+    })
+
+    if (!success) {
+      // Fallback: copiar para clipboard
+      await copyToClipboard(url)
+    }
+  }
+
+  const handleShareAd = async (ad: any) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+    const url = `${baseUrl}/anuncio/${ad.id}`
+    const success = await shareContent({
+      title: ad.title,
+      text: `Confira este anúncio especial: ${ad.title}`,
+      url
+    })
+
+    if (!success) {
+      // Fallback: copiar para clipboard
+      await copyToClipboard(url)
+    }
+  }
+
 
   if (loading) {
     return (
@@ -191,10 +251,7 @@ export function UnifiedContentSection() {
                   <PromotionCard
                     key={promotion.id}
                     promotion={promotion}
-                    onClick={() => {
-                      // Handle promotion click
-                      console.log('Promotion clicked:', promotion.id)
-                    }}
+                    onClick={() => handlePromotionWhatsApp(promotion)}
                   />
                 ))
               )}
@@ -238,8 +295,11 @@ export function UnifiedContentSection() {
                     key={ad.id}
                     ad={ad}
                     onClick={() => {
-                      // Handle ad click
+                      // Handle ad click - no sharing for ads
                       console.log('Ad clicked:', ad.id)
+                      if (ad.link) {
+                        window.open(ad.link, '_blank', 'noopener,noreferrer')
+                      }
                     }}
                   />
                 ))

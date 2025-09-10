@@ -83,7 +83,7 @@ export function useAcademySettings() {
   // Valores padrão caso as configurações não estejam carregadas
   const defaultSettings: AcademySettings = {
     id: "default",
-    name: "BlackRed Fix",
+    name: "Gym Starter",
     description: "Academia completa com musculação, crossfit, pilates e aulas funcionais. Equipamentos de última geração, profissionais qualificados e ambiente motivador para alcançar seus objetivos fitness.",
     phone: "(85) 99999-9999",
     email: "contato@gymstarter.com.br",
@@ -106,12 +106,12 @@ export function useAcademySettings() {
       weeklyReports: true
     },
     logo: undefined,
-    about: "Fundada em 2020, a BlackRed Fix nasceu com a missão de transformar vidas através do fitness. Somos uma academia completa que oferece musculação, crossfit, pilates, aulas funcionais e muito mais. Nossa equipe de profissionais altamente qualificados está preparada para acompanhar você em toda sua jornada fitness, desde o primeiro treino até a conquista dos seus objetivos mais ambiciosos. Venha fazer parte da nossa família e descubra o que é treinar com excelência!",
+    about: "Fundada em 2020, a Gym Starter nasceu com a missão de transformar vidas através do fitness. Somos uma academia completa que oferece musculação, crossfit, pilates, aulas funcionais e muito mais. Nossa equipe de profissionais altamente qualificados está preparada para acompanhar você em toda sua jornada fitness, desde o primeiro treino até a conquista dos seus objetivos mais ambiciosos. Venha fazer parte da nossa família e descubra o que é treinar com excelência!",
     heroTitle: "TRANSFORME SUA VIDA ATRAVÉS DO FITNESS",
     heroSubtitle: "Academia Completa em Fortaleza",
     heroImage: undefined,
     features: {
-      title: "Por que escolher a BlackRed Fix?",
+      title: "Por que escolher a Gym Starter?",
       description: "Somos referência em fitness em Fortaleza, oferecendo uma experiência completa e diferenciada",
       items: [
         {
