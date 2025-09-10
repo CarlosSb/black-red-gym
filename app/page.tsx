@@ -9,6 +9,15 @@ import { MobileMenu } from "@/components/mobile-menu"
 import { HomePageClient } from "@/components/home-page-client"
 import { DynamicColorsProvider } from "@/components/dynamic-colors-provider"
 import { MatriculeSeButton } from "@/components/matricule-se-button"
+import { CheckInModal } from "@/components/checkin-modal"
+import { AppointmentModal } from "@/components/appointment-modal"
+import { ChatFlutuante } from "@/components/chat-flutuante"
+import { PlanSelectionModal } from "@/components/plan-selection-modal"
+import { UnifiedContentSection } from "@/components/unified-content-section"
+import { AdsBanner } from "@/components/ads-banner"
+import { TestimonialCard } from "@/components/ui/testimonial-card"
+import { TestimonialsCarousel } from "@/components/testimonials-carousel"
+import { useTestimonials } from "@/hooks/use-testimonials"
 
 export default async function HomePage() {
   const [settings, plans] = await Promise.all([
@@ -84,6 +93,26 @@ export default async function HomePage() {
               Matricule-se
             </MatriculeSeButton>
 
+            <CheckInModal>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+              >
+                Fazer Check-in
+              </Button>
+            </CheckInModal>
+
+            <AppointmentModal>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-black bg-transparent"
+              >
+                Agendar Aula Experimental
+              </Button>
+            </AppointmentModal>
+
             <Link href="#sobre">
               <Button
                 size="lg"
@@ -101,7 +130,7 @@ export default async function HomePage() {
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || "Por que escolher a Black Red?"}</h3>
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">{settings.features?.title || `Por que escolher a ${settings.name}?`}</h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               {settings.features?.description || "Oferecemos tudo que você precisa para alcançar seus objetivos fitness"}
             </p>
@@ -211,7 +240,9 @@ export default async function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
+                  <PlanSelectionModal plan={plan}>
+                    <Button className="w-full bg-red-accent hover:bg-red-accent/90">Escolher Plano</Button>
+                  </PlanSelectionModal>
                 </CardContent>
               </Card>
             ))}
@@ -231,7 +262,7 @@ export default async function HomePage() {
                 ) : (
                   <>
                     <p className="mb-6">
-                      Fundada em 2024, a Black Red nasceu com o propósito de revolucionar o conceito de academia. Combinamos
+                      Fundada em 2024, a {settings.name} nasceu com o propósito de revolucionar o conceito de academia. Combinamos
                       tecnologia de ponta com metodologias comprovadas para oferecer uma experiência única de treino.
                     </p>
                     <p>
@@ -259,7 +290,7 @@ export default async function HomePage() {
             <div className="bg-black-red rounded-lg p-8 text-white">
               <img
                 src="/modern-gym-interior-with-red-and-black-equipment.jpg"
-                alt="Interior da academia Black Red"
+                alt={`Interior da academia ${settings.name}`}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
               <h4 className="text-xl font-bold mb-4">Ambiente Motivador</h4>
@@ -271,6 +302,55 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Carousel */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4">Depoimentos dos Alunos</h3>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Veja o que nossos alunos dizem sobre a experiência na {settings.name}
+            </p>
+          </div>
+
+          <TestimonialsCarousel
+            testimonials={[
+              {
+                id: "testimonial-1",
+                name: "João Silva",
+                content: `A ${settings.name} transformou completamente minha rotina de treinos! Os equipamentos são de primeira linha e os profissionais são extremamente preparados. Em 8 meses consegui perder 18kg e ganhar massa muscular. Recomendo para todos que querem resultados reais!`,
+                rating: 5,
+                category: "Perda de Peso",
+                isActive: true,
+                createdAt: "2024-01-15T10:00:00Z"
+              },
+              {
+                id: "testimonial-2",
+                name: "Maria Santos",
+                content: "Excelente academia! Os equipamentos são modernos e sempre bem cuidados. As aulas em grupo são muito divertidas e os resultados são visíveis rapidamente.",
+                rating: 5,
+                category: "Condicionamento",
+                isActive: true,
+                createdAt: "2024-02-20T14:30:00Z"
+              },
+              {
+                id: "testimonial-3",
+                name: "Pedro Costa",
+                content: "Melhor investimento que fiz! A equipe é muito preparada e sempre disposta a ajudar. Recomendo para todos que querem mudar de vida através do fitness.",
+                rating: 5,
+                category: "Ganho de Massa",
+                isActive: true,
+                createdAt: "2024-03-10T09:15:00Z"
+              }
+            ]}
+            autoPlay={true}
+            autoPlayInterval={6000}
+          />
+        </div>
+      </section>
+
+      {/* Unified Content Section - Partners, Ads, Promotions */}
+      <UnifiedContentSection />
 
       {/* Contact */}
       <section id="contato" className="py-20">
@@ -403,6 +483,9 @@ export default async function HomePage() {
           </div>
         </div>
       </footer>
+
+      <ChatFlutuante />
+      <AdsBanner />
       </div>
     </DynamicColorsProvider>
   )
