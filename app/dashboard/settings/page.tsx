@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Image, Star, Plus, Trash2 } from "lucide-react"
+import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Image, Star, Plus, Trash2, Bot } from "lucide-react"
 import DataService, { type AcademySettingsData } from "@/lib/data-service"
 
 export default function SettingsPage() {
@@ -165,6 +165,24 @@ export default function SettingsPage() {
     }
   }
 
+  const handleSaveAssistant = async () => {
+    if (!settings) return
+
+    setIsSaving(true)
+    try {
+      const updatedSettings = await DataService.updateSettings({
+        assistantEnabled: settings.assistantEnabled,
+        assistantDelay: settings.assistantDelay,
+        assistantWelcomeMessage: settings.assistantWelcomeMessage,
+      })
+      setSettings(updatedSettings)
+    } catch (error) {
+      console.error("Error saving assistant settings:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -179,21 +197,31 @@ export default function SettingsPage() {
         body: formData,
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Upload failed - Status:', response.status, errorText)
+        alert(`Erro ao fazer upload: ${response.status} - ${response.statusText}`)
+        return
+      }
+
       const result = await response.json()
       if (result.success) {
         const updatedSettings = await DataService.updateSettings({
           logo: result.url,
         })
         setSettings(updatedSettings)
+        alert('Logo atualizado com sucesso!')
       } else {
         console.error('Upload failed:', result.error)
-        alert('Erro ao fazer upload: ' + result.error)
+        alert('Erro ao fazer upload: ' + (result.error || 'Erro desconhecido'))
       }
     } catch (error) {
       console.error('Upload error:', error)
-      alert('Erro ao fazer upload da imagem')
+      alert('Erro ao fazer upload da imagem. Verifique sua conexão.')
     } finally {
       setIsUploading(false)
+      // Limpar o input para permitir novo upload
+      event.target.value = ''
     }
   }
 
@@ -211,18 +239,28 @@ export default function SettingsPage() {
         body: formData,
       })
 
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Hero image upload failed - Status:', response.status, errorText)
+        alert(`Erro ao fazer upload da imagem: ${response.status} - ${response.statusText}`)
+        return
+      }
+
       const result = await response.json()
       if (result.success) {
         setSettings({ ...settings!, heroImage: result.url })
+        alert('Imagem do hero atualizada com sucesso!')
       } else {
-        console.error('Upload failed:', result.error)
-        alert('Erro ao fazer upload: ' + result.error)
+        console.error('Hero image upload failed:', result.error)
+        alert('Erro ao fazer upload: ' + (result.error || 'Erro desconhecido'))
       }
     } catch (error) {
-      console.error('Upload error:', error)
-      alert('Erro ao fazer upload da imagem')
+      console.error('Hero image upload error:', error)
+      alert('Erro ao fazer upload da imagem. Verifique sua conexão.')
     } finally {
       setIsUploading(false)
+      // Limpar o input para permitir novo upload
+      event.target.value = ''
     }
   }
 
@@ -342,46 +380,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* About Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5" />
-              Sobre a Academia
-            </CardTitle>
-            <CardDescription>Texto que aparece na seção "sobre" do site</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="about">Descrição sobre a academia</Label>
-              <Textarea
-                id="about"
-                value={settings.about || ""}
-                onChange={(e) => setSettings({ ...settings, about: e.target.value })}
-                rows={6}
-                placeholder="Conte a história da academia, missão, valores..."
-              />
-            </div>
-
-            <Button
-              onClick={handleSaveAbout}
-              className="bg-red-accent hover:bg-red-accent/90"
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Salvar Sobre
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Hero Section */}
         <Card>
@@ -478,7 +476,7 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="h-5 w-5" />
-              Seção "Por que escolher a Black Red"
+              Seção &ldquo;Por que escolher a Gym Starter&rdquo;
             </CardTitle>
             <CardDescription>Configure os itens de destaque da academia</CardDescription>
           </CardHeader>
@@ -495,7 +493,7 @@ export default function SettingsPage() {
                     title: e.target.value 
                   } 
                 })}
-                placeholder="Ex: Por que escolher a Black Red?"
+                placeholder="Ex: Por que escolher a Gym Starter?"
               />
             </div>
 
@@ -966,6 +964,89 @@ export default function SettingsPage() {
                 <>
                   <Save className="mr-2 h-4 w-4" />
                   Salvar Aparência
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Assistant Settings */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              Assistente Virtual
+            </CardTitle>
+            <CardDescription>Configure o comportamento do assistente AI</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Assistente Ativado</Label>
+                  <p className="text-sm text-muted-foreground">Ativar/desativar o assistente virtual na landing page</p>
+                </div>
+                <Switch
+                  checked={settings.assistantEnabled ?? true}
+                  onCheckedChange={(checked) =>
+                    setSettings({
+                      ...settings,
+                      assistantEnabled: checked,
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="assistant-delay">Atraso de Exibição (segundos)</Label>
+                <Input
+                  id="assistant-delay"
+                  type="number"
+                  min="0"
+                  max="30"
+                  value={(settings.assistantDelay ?? 5000) / 1000}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    assistantDelay: parseInt(e.target.value) * 1000 || 5000
+                  })}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Tempo em segundos antes do assistente aparecer na página
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="assistant-welcome">Mensagem de Boas-vindas</Label>
+                <Textarea
+                  id="assistant-welcome"
+                  value={settings.assistantWelcomeMessage || ""}
+                  onChange={(e) => setSettings({
+                    ...settings,
+                    assistantWelcomeMessage: e.target.value
+                  })}
+                  rows={2}
+                  placeholder="Olá! Como posso ajudar com sua dúvida sobre a academia?"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Mensagem personalizada que o assistente mostra ao iniciar uma conversa
+                </p>
+              </div>
+            </div>
+
+            <Button
+              onClick={handleSaveAssistant}
+              className="bg-red-accent hover:bg-red-accent/90"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Salvar Configurações do Assistente
                 </>
               )}
             </Button>

@@ -13,7 +13,7 @@ export async function GET() {
         name: "Black Red Academia",
         description: "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
         phone: "(11) 99999-9999",
-        email: "contato@blackred.com.br",
+        email: "contato@gymstarter.com.br",
         address: "Rua das Academias, 123 - Centro",
         whatsapp: "5511999999999",
         hours: {
@@ -76,26 +76,29 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      name: settings.name,
-      description: settings.description,
-      phone: settings.phone,
-      email: settings.email,
-      address: settings.address,
-      whatsapp: settings.whatsapp,
-      hours: settings.hours,
-      colors: settings.colors,
-      notifications: settings.notifications,
-      logo: settings.logo,
-      about: settings.about,
-      heroTitle: settings.heroTitle,
-      heroSubtitle: settings.heroSubtitle,
-      heroImage: settings.heroImage,
-      features: settings.features,
-      metrics: settings.metrics,
+      success: true,
+      settings: {
+        name: settings.name,
+        description: settings.description,
+        phone: settings.phone,
+        email: settings.email,
+        address: settings.address,
+        whatsapp: settings.whatsapp,
+        hours: settings.hours,
+        colors: settings.colors,
+        notifications: settings.notifications,
+        logo: settings.logo || "/placeholder-logo.png",
+        about: settings.about,
+        heroTitle: settings.heroTitle,
+        heroSubtitle: settings.heroSubtitle,
+        heroImage: settings.heroImage,
+        features: settings.features,
+        metrics: settings.metrics,
+      }
     })
   } catch (error) {
     console.error('Error fetching settings:', error)
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Failed to fetch settings' }, { status: 500 })
   }
 }
 
@@ -134,25 +137,28 @@ export async function PUT(request: NextRequest) {
     })
 
     return NextResponse.json({
-      name: updatedSettings.name,
-      description: updatedSettings.description,
-      phone: updatedSettings.phone,
-      email: updatedSettings.email,
-      address: updatedSettings.address,
-      whatsapp: updatedSettings.whatsapp,
-      hours: updatedSettings.hours,
-      colors: updatedSettings.colors,
-      notifications: updatedSettings.notifications,
-      logo: updatedSettings.logo,
-      about: updatedSettings.about,
-      heroTitle: updatedSettings.heroTitle,
-      heroSubtitle: updatedSettings.heroSubtitle,
-      heroImage: updatedSettings.heroImage,
-      features: updatedSettings.features,
-      metrics: updatedSettings.metrics,
+      success: true,
+      settings: {
+        name: updatedSettings.name,
+        description: updatedSettings.description,
+        phone: updatedSettings.phone,
+        email: updatedSettings.email,
+        address: updatedSettings.address,
+        whatsapp: updatedSettings.whatsapp,
+        hours: updatedSettings.hours,
+        colors: updatedSettings.colors,
+        notifications: updatedSettings.notifications,
+        logo: updatedSettings.logo || "/placeholder-logo.png",
+        about: updatedSettings.about,
+        heroTitle: updatedSettings.heroTitle,
+        heroSubtitle: updatedSettings.heroSubtitle,
+        heroImage: updatedSettings.heroImage,
+        features: updatedSettings.features,
+        metrics: updatedSettings.metrics,
+      }
     })
   } catch (error) {
     console.error('Error updating settings:', error)
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Failed to update settings' }, { status: 500 })
   }
 }

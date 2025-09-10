@@ -93,7 +93,7 @@ export async function getServerSettings(): Promise<AcademySettingsData> {
       name: "Black Red Academia",
       description: "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
       phone: "(11) 99999-9999",
-      email: "contato@blackred.com.br",
+      email: "contato@gymstarter.com.br",
       address: "Rua das Academias, 123 - Centro",
       whatsapp: "5511999999999",
       hours: {

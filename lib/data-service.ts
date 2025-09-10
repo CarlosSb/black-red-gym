@@ -71,6 +71,9 @@ export type AcademySettingsData = {
     operatingHours: string
     foundedYear: number
   }
+  assistantEnabled?: boolean
+  assistantDelay?: number
+  assistantWelcomeMessage?: string
 }
 
 class DataService {
@@ -81,7 +84,8 @@ class DataService {
       if (!response.ok) {
         throw new Error('Failed to fetch plans')
       }
-      return await response.json()
+      const data = await response.json()
+      return data.plans || []
     } catch (error) {
       console.error("Error reading plans:", error)
       return []
@@ -227,7 +231,8 @@ class DataService {
       if (!response.ok) {
         throw new Error('Failed to fetch settings')
       }
-      return await response.json()
+      const data = await response.json()
+      return data.settings
     } catch (error) {
       console.error("Error reading settings:", error)
       return this.getDefaultSettings()
@@ -240,7 +245,7 @@ class DataService {
       description:
         "Academia moderna com equipamentos de última geração, personal trainers qualificados e ambiente motivador.",
       phone: "(11) 99999-9999",
-      email: "contato@blackred.com.br",
+      email: "contato@gymstarter.com.br",
       address: "Rua das Academias, 123 - Centro",
       whatsapp: "5511999999999",
       hours: {
@@ -307,12 +312,13 @@ class DataService {
         },
         body: JSON.stringify(updates),
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to update settings')
       }
-      
-      return await response.json()
+
+      const data = await response.json()
+      return data.settings
     } catch (error) {
       console.error("Error updating settings:", error)
       throw error

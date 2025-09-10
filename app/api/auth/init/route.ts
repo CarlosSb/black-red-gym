@@ -13,12 +13,12 @@ export async function POST() {
       await prisma.user.create({
         data: {
           name: "Administrador",
-          email: "admin@blackred.com.br",
+          email: "admin@gymstarter.com.br",
           password: hashedPassword,
           role: "ADMIN"
         }
       })
-      console.log("Default admin user created: admin@blackred.com.br / admin123")
+      console.log("Default admin user created: admin@gymstarter.com.br / admin123")
     }
 
     return NextResponse.json({ success: true, message: 'Admin user initialized' })
