@@ -227,9 +227,66 @@ export async function POST(request: NextRequest) {
       where: { status: 'ACTIVE' }
     })
 
+    // Carregar promoções ativas
+    const promotions = await prisma.promotion.findMany({
+      where: {
+        isActive: true,
+        validUntil: {
+          gte: new Date()
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    // Carregar parceiros ativos
+    const partners = await prisma.partner.findMany({
+      where: {
+        isActive: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    // Carregar anúncios ativos
+    const ads = await prisma.ad.findMany({
+      where: {
+        isActive: true,
+        validUntil: {
+          gte: new Date()
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
     // Construir prompt em PT-BR simulando atendente humano
     let knowledgeText = knowledge.map(k => `Pergunta: ${k.question}\nResposta: ${k.answer}`).join('\n\n')
     let plansText = plans.map(p => `Plano: ${p.name} - Preço: R$ ${p.price} - Descrição: ${p.description} - Benefícios: ${p.features.join(', ')}`).join('\n')
+
+    // Informações sobre promoções ativas
+    let promotionsText = ''
+    if (promotions.length > 0) {
+      promotionsText = '\n\nPROMOÇÕES ATIVAS:\n' +
+        promotions.map(p => `• ${p.title}: ${p.description} (Válido até ${new Date(p.validUntil).toLocaleDateString('pt-BR')})`).join('\n')
+    }
+
+    // Informações sobre parceiros
+    let partnersText = ''
+    if (partners.length > 0) {
+      partnersText = '\n\nPARCEIROS DISPONÍVEIS:\n' +
+        partners.map(p => `• ${p.name} (${p.category}): ${p.description}${p.link ? ` - Site: ${p.link}` : ''}`).join('\n')
+    }
+
+    // Informações sobre anúncios (discretas)
+    let adsText = ''
+    if (ads.length > 0) {
+      adsText = '\n\nSERVIÇOS ADICIONAIS DISPONÍVEIS:\n' +
+        ads.map(ad => `• ${ad.title}${ad.link ? ` - Mais informações disponíveis` : ''}`).join('\n')
+    }
 
     const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
@@ -335,11 +392,36 @@ WHATSAPP APENAS QUANDO NECESSÁRIO:
 - Use WhatsApp para matrículas, cancelamentos, dúvidas complexas ou quando API falhar
 - Direcionamento amigável: "Para isso é melhor falar direto no WhatsApp!"
 
+INFORMAÇÕES SOBRE SERVIÇOS E OFERTAS:
+
 Use o conhecimento fornecido quando relevante:
 ${knowledgeText}
 
 Para planos, use as informações:
 ${plansText}
+
+${promotionsText}
+
+${partnersText}
+
+${adsText}
+
+INSTRUÇÕES PARA RESPONDER CONSULTAS:
+
+PROMOÇÕES:
+- Quando o cliente perguntar sobre "promoções", "ofertas", "descontos": Liste todas as promoções ativas de forma atrativa
+- Destaque datas de validade e benefícios
+- Incentive a aproveitar as ofertas
+
+PARCEIROS:
+- Quando mencionarem profissões específicas (nutricionista, fisioterapeuta, etc.): Sugira parceiros relevantes
+- Forneça informações de contato quando apropriado
+- Mantenha tom profissional ao apresentar parceiros
+
+ANÚNCIOS:
+- Mencione serviços adicionais apenas quando relevante ao contexto da conversa
+- Não seja "vendedor" - seja informativo e útil
+- Use tom casual: "Ah, e temos também..."
 
 Seja proativo e resolva problemas do usuário eficientemente.
     `

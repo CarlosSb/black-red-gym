@@ -2,7 +2,7 @@
 
 Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScript, Prisma e PostgreSQL. Oferece funcionalidades modernas para alunos, administradores e profissionais da academia.
 
-![GymStarter](https://img.shields.io/badge/GymStarter-v1.0.1-red)
+![GymStarter](https://img.shields.io/badge/GymStarter-v1.1.0-red)
 ![Next.js](https://img.shields.io/badge/Next.js-15.0-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-6.15-green)
@@ -11,6 +11,7 @@ Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScri
 ## 📋 Índice
 
 - [🚀 Funcionalidades](#-funcionalidades)
+- [🤖 Assistente Virtual Inteligente](#-assistente-virtual-inteligente)
 - [🛠️ Tecnologias](#️-tecnologias)
 - [📦 Instalação](#-instalação)
 - [⚙️ Configuração](#️-configuração)
@@ -50,6 +51,73 @@ Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScri
 - ✅ **Integração Google Maps**
 - ✅ **WhatsApp Business** integrado
 - ✅ **SEO otimizado**
+- ✅ **Assistente Virtual Inteligente** com IA
+- ✅ **Agendamento automático** via chat
+- ✅ **Suporte 24/7** com detecção inteligente
+
+## 🤖 Assistente Virtual Inteligente
+
+### Funcionalidades do Chatbot
+- 🎯 **Interpretação Inteligente de Linguagem Natural**
+  - Reconhece frases como: "Quero agendar musculação para amanhã às 14h"
+  - Identifica automaticamente: nome, data, horário e tipo de aula
+  - Suporte a expressões relativas: "amanhã", "próximo sábado", "manhã"
+
+- 📅 **Agendamento Automático**
+  - Integração direta com API de agendamentos
+  - Validação de disponibilidade em tempo real
+  - Confirmação imediata com mensagem personalizada
+  - Tratamento de conflitos de horário
+
+- 💬 **Experiência Conversacional Avançada**
+  - Respostas contextuais baseadas no histórico
+  - Detecção automática de intenção de agendamento
+  - Suporte a múltiplos idiomas (foco em português brasileiro)
+  - Personalização baseada no perfil do usuário
+
+- 🚨 **Tratamento de Erros e Recuperação**
+  - Detecção de travamentos com timeout inteligente
+  - Botão de reload para recuperação de sessão
+  - Mensagens de erro amigáveis
+  - Fallback automático para WhatsApp quando necessário
+
+- 📱 **Interface Responsiva e Acessível**
+  - Design otimizado para mobile e desktop
+  - Animações suaves de expandir/colapsar
+  - Suporte completo a navegação por teclado
+  - Alto contraste e legibilidade
+
+- 🔄 **Integração com WhatsApp**
+  - Ícone oficial do WhatsApp (SVG nativo)
+  - Mensagens contextuais personalizadas
+  - Redirecionamento automático baseado na conversa
+  - Detecção inteligente de tópicos complexos
+
+### Exemplos de Uso
+```bash
+# Agendamento inteligente
+Usuário: "Quero agendar musculação para amanhã às 14h, meu nome é João Silva"
+Assistente: "🎉 Perfeito, João Silva! Agendei sua aula de Musculação para o dia 10/09 às 14:00"
+
+# Detecção de horário ocupado
+Usuário: "Agende uma aula para sábado de manhã"
+Assistente: "Ops! O horário 09:00 no dia 14/09 já está ocupado. Que tal outro horário?"
+
+# Suporte a matrículas
+Usuário: "Quero me matricular na academia"
+Assistente: [Mostra botão do WhatsApp com contexto personalizado]
+```
+
+### Configuração do Assistente
+```env
+# Variáveis obrigatórias
+OPENAI_API_KEY="your-openai-api-key"
+NEXT_PUBLIC_ASSISTANT_ENABLED="true"
+
+# Configurações opcionais
+NEXT_PUBLIC_ASSISTANT_DELAY="5000"
+NEXT_PUBLIC_ASSISTANT_WELCOME_MESSAGE="Olá! Como posso ajudar?"
+```
 
 ## 🛠️ Tecnologias
 
@@ -72,10 +140,16 @@ Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScri
 - **Sessões seguras** - Cookies HTTPOnly
 - **Proteção CSRF** - State parameter
 
+### IA e Automação
+- **OpenAI GPT** - Motor de IA para assistente virtual
+- **Processamento de Linguagem Natural** - Interpretação inteligente de frases
+- **Algoritmos de Detecção** - Reconhecimento de intenção e contexto
+
 ### Outros
 - **QRCode.js** - Geração de QR Codes
 - **Resend** - Serviço de e-mail
 - **Vercel** - Plataforma de deploy
+- **WhatsApp Business API** - Integração com WhatsApp
 
 ## 📦 Instalação
 
@@ -131,10 +205,22 @@ Sistema completo de gestão para academias desenvolvido com Next.js 15, TypeScri
 Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
-# Database
+# ==========================================
+# BANCO DE DADOS
+# ==========================================
 DATABASE_URL="postgresql://username:password@localhost:5432/gymstarter"
 
-# NextAuth.js (opcional)
+# ==========================================
+# 🤖 ASSISTENTE VIRTUAL (OBRIGATÓRIO)
+# ==========================================
+OPENAI_API_KEY="your-openai-api-key"
+NEXT_PUBLIC_ASSISTANT_ENABLED="true"
+NEXT_PUBLIC_ASSISTANT_DELAY="5000"
+NEXT_PUBLIC_ASSISTANT_WELCOME_MESSAGE="Olá! Como posso ajudar você hoje?"
+
+# ==========================================
+# 🔐 AUTENTICAÇÃO
+# ==========================================
 NEXTAUTH_SECRET="sua-chave-secreta-super-segura"
 NEXTAUTH_URL="http://localhost:3000"
 
@@ -142,15 +228,49 @@ NEXTAUTH_URL="http://localhost:3000"
 GOOGLE_CLIENT_ID="seu-client-id.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET="seu-client-secret"
 
-# App Configuration
+# ==========================================
+# 📱 CONFIGURAÇÃO DO APP
+# ==========================================
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_ACADEMY_NAME="Black Red Academia"
+NEXT_PUBLIC_ACADEMY_PHONE="5511999999999"
 
-# Email Service (opcional)
+# ==========================================
+# 📧 EMAIL (OPCIONAL)
+# ==========================================
 EMAIL_FROM="noreply@gymstarter.com.br"
 EMAIL_SMTP_HOST="smtp.gmail.com"
 EMAIL_SMTP_PORT="587"
 EMAIL_SMTP_USER="seu-email@gmail.com"
 EMAIL_SMTP_PASS="sua-senha-app"
+```
+
+### Configuração do Assistente Virtual
+
+#### 1. **Chave da OpenAI (Obrigatória)**
+```bash
+# Obtenha sua chave em: https://platform.openai.com/api-keys
+OPENAI_API_KEY="sk-proj-..."
+```
+
+#### 2. **Configurações do Chat**
+```env
+# Habilitar/desabilitar assistente
+NEXT_PUBLIC_ASSISTANT_ENABLED="true"
+
+# Delay antes de mostrar (milissegundos)
+NEXT_PUBLIC_ASSISTANT_DELAY="5000"
+
+# Mensagem de boas-vindas personalizada
+NEXT_PUBLIC_ASSISTANT_WELCOME_MESSAGE="Olá! Sou o assistente da Black Red Academia!"
+```
+
+#### 3. **Configurações da Academia**
+```env
+# Informações que aparecem no chat
+NEXT_PUBLIC_ACADEMY_NAME="Black Red Academia"
+NEXT_PUBLIC_ACADEMY_PHONE="5511999999999"
+NEXT_PUBLIC_ACADEMY_EMAIL="contato@blackredacademia.com.br"
 ```
 
 ### Configuração do Google OAuth
@@ -207,6 +327,7 @@ gym-starter/
 │   └── page.tsx                  # Homepage
 ├── components/                   # Componentes React
 │   ├── ui/                       # Componentes base shadcn/ui
+│   ├── chat-flutuante.tsx        # 🤖 Assistente virtual inteligente
 │   ├── appointment-modal.tsx     # Modal de agendamento
 │   ├── plan-selection-modal.tsx  # Modal de seleção de plano
 │   └── ...
@@ -229,6 +350,7 @@ gym-starter/
 ## 🎨 Componentes
 
 ### Componentes Principais
+- **ChatFlutuante** - Assistente virtual inteligente com IA
 - **AppointmentModal** - Modal para agendamento de aulas
 - **PlanSelectionModal** - Modal para seleção de planos
 - **CheckInModal** - Modal para check-in via QR Code
@@ -407,8 +529,15 @@ git push origin main
 # Produção - OBRIGATÓRIAS
 DATABASE_URL="postgresql://..."
 NEXT_PUBLIC_APP_URL="https://your-app.vercel.app"
+OPENAI_API_KEY="your-production-openai-key"
 GOOGLE_CLIENT_ID="your-production-client-id"
 GOOGLE_CLIENT_SECRET="your-production-client-secret"
+
+# Configurações do Assistente Virtual
+NEXT_PUBLIC_ASSISTANT_ENABLED="true"
+NEXT_PUBLIC_ASSISTANT_DELAY="5000"
+NEXT_PUBLIC_ACADEMY_NAME="Black Red Academia"
+NEXT_PUBLIC_ACADEMY_PHONE="5511999999999"
 
 # Opcionais
 EMAIL_FROM="noreply@yourdomain.com"
@@ -477,12 +606,50 @@ Para suporte técnico:
 - 💬 **WhatsApp**: +55 11 99999-9999
 - 📖 **Documentação**: [docs.gymstarter.com.br](https://docs.gymstarter.com.br)
 
+## 📈 Últimas Atualizações (v1.1.0)
+
+### 🤖 **Assistente Virtual Inteligente**
+- ✅ **Chatbot com IA integrada** usando OpenAI GPT
+- ✅ **Interpretação inteligente de linguagem natural**
+- ✅ **Agendamento automático** via chat
+- ✅ **Integração com WhatsApp** inteligente
+- ✅ **Tratamento de erros** e recuperação automática
+- ✅ **Interface responsiva** e acessível
+- ✅ **Detecção contextual** de intenção
+- ✅ **Mensagens personalizadas** baseadas na conversa
+
+### 🔧 **Melhorias Técnicas**
+- ✅ **Modal persistente** que não fecha completamente
+- ✅ **Animações suaves** de expandir/colapsar
+- ✅ **Tratamento de crash** com botão de reload
+- ✅ **Ícone oficial do WhatsApp** (SVG nativo)
+- ✅ **Responsividade mobile-first**
+- ✅ **Acessibilidade WCAG** completa
+- ✅ **Timeout inteligente** para detectar travamentos
+- ✅ **Logs detalhados** para análise
+
+### 📱 **Experiência do Usuário**
+- ✅ **Detecção automática** de tópicos complexos
+- ✅ **Redirecionamento inteligente** para WhatsApp
+- ✅ **Mensagens contextuais** personalizadas
+- ✅ **Validação em tempo real** de agendamentos
+- ✅ **Feedback visual** imediato
+- ✅ **Navegação por teclado** completa
+
+### 🔒 **Segurança e Performance**
+- ✅ **Rate limiting** nas APIs
+- ✅ **Sanitização de entrada** inteligente
+- ✅ **Logs de auditoria** para interações
+- ✅ **Cache otimizado** para respostas
+- ✅ **Bundle size** reduzido
+
 ## 🙏 Agradecimentos
 
 - **Next.js** - Framework incrível
 - **shadcn/ui** - Componentes acessíveis
 - **Prisma** - ORM excepcional
 - **Tailwind CSS** - Framework CSS produtivo
+- **OpenAI** - Tecnologia de IA revolucionária
 - **Comunidade Open Source** - Por tornar tudo isso possível
 
 ---

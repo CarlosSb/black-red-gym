@@ -13,6 +13,7 @@ Documentação completa das APIs REST do sistema Black Red Gym.
 - [📧 Mensagens](#-mensagens)
 - [💰 Planos](#-planos)
 - [⚙️ Configurações](#️-configurações)
+- [🤖 Chat/Assistente Virtual](#-chatassistente-virtual)
 - [📝 Códigos de Referência](#-códigos-de-referência)
 
 ## 🏗️ Arquitetura da API
@@ -407,6 +408,150 @@ PATCH /api/settings
 }
 ```
 
+## 🤖 Chat/Assistente Virtual
+
+### Enviar Mensagem para o Chatbot
+```http
+POST /api/chat
+```
+
+**Cabeçalhos obrigatórios:**
+```
+Content-Type: application/json
+```
+
+**Corpo da requisição:**
+```json
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Olá, quero agendar musculação para amanhã às 14h, meu nome é João Silva"
+    }
+  ]
+}
+```
+
+**Resposta de sucesso (agendamento automático):**
+```json
+{
+  "success": true,
+  "response": "🎉 Perfeito, João Silva! Agendei sua aula de Musculação para o dia 10/09 às 14:00. Um de nossos atendentes entrará em contato para confirmar. Qualquer dúvida, é só falar comigo! 😉"
+}
+```
+
+**Resposta de sucesso (conversa normal):**
+```json
+{
+  "success": true,
+  "response": "Olá! Sou o assistente virtual da Black Red Academia. Como posso ajudar você hoje?"
+}
+```
+
+### Funcionalidades do Chatbot
+
+#### 🤖 **Interpretação Inteligente**
+- **Frases de agendamento**: "Quero agendar musculação para amanhã às 14h"
+- **Datas relativas**: "amanhã", "próximo sábado", "segunda-feira"
+- **Horários**: "14h", "manhã", "tarde", "noite"
+- **Tipos de aula**: "musculação", "crossfit", "pilates", "yoga"
+
+#### 📅 **Agendamento Automático**
+- **Validação de disponibilidade** em tempo real
+- **Criação automática** de agendamentos via API
+- **Confirmação imediata** com detalhes completos
+- **Tratamento de conflitos** com sugestões alternativas
+
+#### 💬 **Integração com WhatsApp**
+- **Detecção automática** de tópicos complexos
+- **Mensagens contextuais** personalizadas
+- **Redirecionamento inteligente** baseado na conversa
+- **Ícone oficial** do WhatsApp
+
+#### 🚨 **Tratamento de Erros**
+- **Timeout inteligente** (30 segundos)
+- **Mensagens de erro** amigáveis
+- **Recuperação automática** de sessão
+- **Logs detalhados** para análise
+
+### Exemplos de Uso
+
+#### Agendamento Completo
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "Quero agendar musculação para amanhã às 14h, meu nome é João Silva"
+      }
+    ]
+  }'
+```
+
+#### Conversa Normal
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "Quais são os horários de funcionamento?"
+      }
+    ]
+  }'
+```
+
+#### Detecção de WhatsApp
+```bash
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "Quero me matricular na academia"
+      }
+    ]
+  }'
+```
+
+### Configuração do Assistente
+
+#### Variáveis de Ambiente
+```env
+# Obrigatório
+OPENAI_API_KEY="your-openai-api-key"
+
+# Opcional
+NEXT_PUBLIC_ASSISTANT_ENABLED="true"
+NEXT_PUBLIC_ASSISTANT_DELAY="5000"
+NEXT_PUBLIC_ASSISTANT_WELCOME_MESSAGE="Olá! Como posso ajudar?"
+NEXT_PUBLIC_ACADEMY_NAME="Black Red Academia"
+NEXT_PUBLIC_ACADEMY_PHONE="5511999999999"
+```
+
+### Logs e Monitoramento
+
+#### Logs de Interação
+```json
+{
+  "userMessage": "Quero agendar musculação...",
+  "aiResponse": "🎉 Perfeito, João Silva!...",
+  "hasAppointmentIntent": true,
+  "appointmentConfidence": 1.4,
+  "timestamp": "2025-09-09T18:57:33.712Z"
+}
+```
+
+#### Métricas Disponíveis
+- **Taxa de sucesso** de agendamentos automáticos
+- **Tempo médio de resposta** do assistente
+- **Detecção de intenção** por tipo de conversa
+- **Conversões para WhatsApp** por tópico
+
 ## 📝 Códigos de Referência
 
 ### Gerar Código QR
@@ -507,7 +652,8 @@ curl -X GET http://localhost:3000/api/users \
 ---
 
 <div align="center">
-  <p>📡 <strong>API GymStarter</strong> - v1.0.1</p>
+  <p>📡 <strong>API GymStarter</strong> - v1.1.0</p>
+  <p>🤖 <strong>Assistente Virtual Inteligente Integrado</strong></p>
   <p>
     <a href="#-documentação-da-api---gymstarter">
       Voltar ao topo

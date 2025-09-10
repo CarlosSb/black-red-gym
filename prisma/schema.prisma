@@ -209,3 +209,43 @@ model KnowledgeBase {
 
   @@map("knowledge_bases")
 }
+
+model Promotion {
+  id          String   @id @default(cuid())
+  title       String
+  description String   @db.Text
+  image       String?  // Image URL or path
+  validUntil  DateTime // Expiration date
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("promotions")
+}
+
+model Partner {
+  id          String   @id @default(cuid())
+  name        String
+  description String   @db.Text
+  logo        String?  // Logo URL or path
+  link        String?  // Website or contact link
+  category    String   // e.g., "Nutricionista", "Fisioterapeuta", "Personal"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("partners")
+}
+
+model Ad {
+  id          String   @id @default(cuid())
+  title       String
+  image       String?  // Banner image URL or path
+  link        String?  // Target URL
+  validUntil  DateTime // Expiration date
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("ads")
+}
