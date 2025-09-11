@@ -119,7 +119,13 @@ async function main() {
         personalTrainers: 15,
         operatingHours: '18h/dia',
         foundedYear: 2020
-      }
+      },
+      assistantEnabled: true,
+      assistantDelay: 5000,
+      assistantWelcomeMessage: 'Olá! Sou o assistente virtual da Gym Starter. Como posso ajudar você hoje?',
+      allowScheduling: 'onIntent',
+      schedulingMode: 'conservative',
+      fallbackResponse: 'Se precisar de ajuda com agendamento, posso te orientar ou direcionar para nosso WhatsApp! 😉'
     },
   })
 

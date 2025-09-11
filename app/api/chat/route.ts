@@ -344,7 +344,9 @@ export async function POST(request: NextRequest) {
       name: settingsResponse?.name,
       whatsapp: settingsResponse?.whatsapp,
       phone: settingsResponse?.phone,
-      email: settingsResponse?.email
+      email: settingsResponse?.email,
+      allowScheduling: settingsResponse?.allowScheduling,
+      schedulingMode: settingsResponse?.schedulingMode
     })
 
     const academyName = settingsResponse?.name || 'Gym Starter'
@@ -353,7 +355,12 @@ export async function POST(request: NextRequest) {
     const academyPhone = settingsResponse?.phone || '(85) 99999-9999'
     const academyEmail = settingsResponse?.email || 'contato@gymstarter.com.br'
 
-    console.log('Valores finais:', { academyName, whatsappNumber, academyPhone, academyEmail })
+    // Configurações do assistente
+    const allowScheduling = settingsResponse?.allowScheduling || 'onIntent'
+    const schedulingMode = settingsResponse?.schedulingMode || 'conservative'
+    const fallbackResponse = settingsResponse?.fallbackResponse || 'Se precisar de ajuda com agendamento, posso te orientar ou direcionar para nosso WhatsApp! 😉'
+
+    console.log('Configurações do assistente:', { allowScheduling, schedulingMode, fallbackResponse })
 
     // Carregar knowledge relevante
     const knowledge = await prisma.knowledgeBase.findMany()
@@ -446,8 +453,47 @@ MODALIDADES: Musculação, CrossFit, Pilates, Funcional, Spinning, Yoga, Dança
 
     const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
-    // Lógica melhorada de agendamento - APENAS quando explicitamente solicitado e com alta confiança
-    if (appointmentRequest.hasAppointmentIntent && appointmentRequest.confidence > 0.8) {
+    // Lógica de controle de agendamento baseada nas configurações
+    let shouldOfferScheduling = false
+
+    if (appointmentRequest.hasAppointmentIntent) {
+      switch (allowScheduling) {
+        case 'onIntent':
+          // Só oferece agendamento se detectar intenção explícita E confiança alta
+          shouldOfferScheduling = appointmentRequest.confidence > 0.8
+          break
+        case 'always':
+          // Sempre oferece agendamento quando detecta intenção (mesmo com baixa confiança)
+          shouldOfferScheduling = true
+          break
+        case 'off':
+          // Nunca oferece agendamento automaticamente
+          shouldOfferScheduling = false
+          break
+        default:
+          // Padrão conservador
+          shouldOfferScheduling = appointmentRequest.confidence > 0.8
+      }
+    }
+
+    console.log('Controle de agendamento:', {
+      allowScheduling,
+      schedulingMode,
+      hasAppointmentIntent: appointmentRequest.hasAppointmentIntent,
+      confidence: appointmentRequest.confidence,
+      shouldOfferScheduling
+    })
+
+    // Se agendamento estiver OFF mas usuário demonstrou intenção, direcione para WhatsApp
+    if (allowScheduling === 'off' && appointmentRequest.hasAppointmentIntent && appointmentRequest.confidence > 0.6) {
+      return NextResponse.json({
+        success: true,
+        response: `${fallbackResponse}\n\n📱 Fale diretamente no WhatsApp: ${whatsappUrl}\n\nLá você terá atendimento personalizado para agendar sua aula! 😉`
+      })
+    }
+
+    // Lógica de agendamento baseada na configuração
+    if (shouldOfferScheduling) {
       console.log('Processando agendamento solicitado:', appointmentRequest)
 
       // Verificar se temos dados mínimos para prosseguir
@@ -556,20 +602,24 @@ ORIENTAÇÕES GERAIS:
 - Mantenha respostas concisas mas informativas
 - Sempre que mencionar contato, use as informações oficiais da academia
 
-AGENDAMENTO INTELIGENTE (SOMENTE QUANDO EXPLICITAMENTE SOLICITADO):
-- APENAS inicie agendamento quando o usuário EXPRESSAMENTE pedir para agendar/marcar
-- NÃO force agendamento em conversas gerais sobre academia
-- Exemplos de quando AGENDAR:
-  * "Quero agendar uma aula"
-  * "Gostaria de marcar musculação"
-  * "Preciso reservar horário"
-- Exemplos de quando NÃO agendar:
-  * "Quero conhecer a academia" → apenas informe
-  * "Sou novo aqui" → dê boas-vindas e informações
-  * "Como funciona?" → explique sem agendar
-- INTERPRETE frases naturais apenas quando for intenção clara de agendamento
-- IDENTIFIQUE automaticamente dados APENAS no contexto de agendamento
-- COLETA PROGRESSIVA DE DADOS apenas quando agendamento confirmado
+CONTROLE DE AGENDAMENTO (${allowScheduling.toUpperCase()}):
+- Modo atual: ${allowScheduling}
+- ${allowScheduling === 'onIntent' ? 'SÓ oferece agendamento quando detectar intenção EXPLÍCITA e confiança ALTA (>0.8)' : ''}
+- ${allowScheduling === 'always' ? 'SEMPRE oferece agendamento quando detectar QUALQUER intenção' : ''}
+- ${allowScheduling === 'off' ? 'NUNCA oferece agendamento automaticamente' : ''}
+
+DIRETRIZES DE AGENDAMENTO:
+- Respeite sempre a configuração atual de agendamento
+- Se agendamento estiver OFF: direcione para WhatsApp ou atendimento humano
+- Se agendamento estiver ON_INTENT: só inicie quando houver intenção clara e confiança alta
+- Se agendamento estiver ALWAYS: seja mais proativo mas não force
+- Use a resposta padrão quando não puder agendar: "${fallbackResponse}"
+
+EXEMPLOS DE COMPORTAMENTO:
+- Usuário: "Quero conhecer a academia" → Responda normalmente, não ofereça agendamento
+- Usuário: "Como funciona?" → Explique sem agendamento
+- Usuário: "Quero agendar musculação" → ${allowScheduling === 'off' ? 'Direcione para WhatsApp' : 'Inicie processo de agendamento'}
+- Usuário: "Sou novo aqui" → Dê boas-vindas e informações gerais
 
 FLUXO CONVERSACIONAL NATURAL:
 - Mantenha conversa fluida e natural
