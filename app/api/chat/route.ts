@@ -340,11 +340,20 @@ export async function POST(request: NextRequest) {
 
     // Carregar settings da academia
     const settingsResponse = await prisma.academySettings.findFirst()
+    console.log('Settings carregadas:', {
+      name: settingsResponse?.name,
+      whatsapp: settingsResponse?.whatsapp,
+      phone: settingsResponse?.phone,
+      email: settingsResponse?.email
+    })
+
     const academyName = settingsResponse?.name || 'Gym Starter'
     const whatsappNumber = settingsResponse?.whatsapp || '5585999999999'
     const academyAddress = settingsResponse?.address || 'Av. Santos Dumont, 1515 - Aldeota, Fortaleza - CE'
     const academyPhone = settingsResponse?.phone || '(85) 99999-9999'
     const academyEmail = settingsResponse?.email || 'contato@gymstarter.com.br'
+
+    console.log('Valores finais:', { academyName, whatsappNumber, academyPhone, academyEmail })
 
     // Carregar knowledge relevante
     const knowledge = await prisma.knowledgeBase.findMany()
@@ -396,19 +405,19 @@ export async function POST(request: NextRequest) {
     // Atualizar contexto com informações da mensagem atual
     conversationContext = updateConversationContext(conversationContext, userMessage)
 
-    // Verificar se é uma solicitação de agendamento
+    // Verificar se é uma solicitação de agendamento (mais conservadora)
     const appointmentRequest = parseAppointmentRequest(userMessage, conversationContext)
 
     // Construir informações da academia
     const academyInfo = `
-    ACADEMIA: ${academyName}
-    ENDEREÇO: ${academyAddress}
-    TELEFONE: ${academyPhone}
-    EMAIL: ${academyEmail}
-    WHATSAPP: ${whatsappNumber}
-    HORÁRIOS: Segunda a sexta: 5:30h às 23:00h, Sábados: 7:00h às 20:00h, Domingos: 8:00h às 18:00h
-    MODALIDADES: Musculação, CrossFit, Pilates, Funcional, Spinning, Yoga, Dança
-    `
+ACADEMIA: ${academyName}
+ENDEREÇO: ${academyAddress}
+TELEFONE: ${academyPhone}
+EMAIL: ${academyEmail}
+WHATSAPP: ${whatsappNumber}
+HORÁRIOS: Segunda a sexta: 5:30h às 23:00h, Sábados: 7:00h às 20:00h, Domingos: 8:00h às 18:00h
+MODALIDADES: Musculação, CrossFit, Pilates, Funcional, Spinning, Yoga, Dança
+`
 
     // Construir prompt em PT-BR simulando atendente humano
     let knowledgeText = knowledge.map(k => `Pergunta: ${k.question}\nResposta: ${k.answer}`).join('\n\n')
@@ -437,37 +446,36 @@ export async function POST(request: NextRequest) {
 
     const whatsappUrl = `https://wa.me/${whatsappNumber}`
 
-    // Lógica melhorada de agendamento com coleta progressiva de dados
-    if (appointmentRequest.hasAppointmentIntent) {
-      console.log('Processando agendamento inteligente:', appointmentRequest)
+    // Lógica melhorada de agendamento - APENAS quando explicitamente solicitado e com alta confiança
+    if (appointmentRequest.hasAppointmentIntent && appointmentRequest.confidence > 0.8) {
+      console.log('Processando agendamento solicitado:', appointmentRequest)
 
-      // Verificar informações faltantes e coletar progressivamente
-      const missingInfo = appointmentRequest.missingInfo
-
-      if (missingInfo.includes('nome') && !conversationContext.userInfo?.name) {
+      // Verificar se temos dados mínimos para prosseguir
+      if (!appointmentRequest.name && !conversationContext.userInfo?.name) {
         return NextResponse.json({
           success: true,
           response: "Oi! Que legal que você quer agendar uma aula! 😊 Para começar, qual é o seu nome completo?"
         })
       }
 
-      if (missingInfo.includes('data') && !appointmentRequest.date) {
-        const userName = conversationContext.userInfo?.name || appointmentRequest.name || 'amigo'
+      // Usar nome do contexto ou da requisição
+      const userName = conversationContext.userInfo?.name || appointmentRequest.name || 'amigo'
+
+      if (!appointmentRequest.date) {
         return NextResponse.json({
           success: true,
-          response: `Oi ${userName}! Que dia você prefere para a aula? Por exemplo: "amanhã", "próximo sábado", "segunda-feira" ou uma data específica.`
+          response: `Oi ${userName}! Que dia você prefere para a aula? Por exemplo: "amanhã", "próximo sábado", ou "segunda-feira".`
         })
       }
 
-      if (missingInfo.includes('horário') && !appointmentRequest.time) {
-        const userName = conversationContext.userInfo?.name || appointmentRequest.name || 'amigo'
+      if (!appointmentRequest.time) {
         return NextResponse.json({
           success: true,
           response: `${userName}, qual horário você prefere? Por exemplo: "9h da manhã", "14h", "tarde" ou "noite".`
         })
       }
 
-      // Se temos todas as informações necessárias, verificar disponibilidade
+      // Só prossegue se temos TODAS as informações necessárias
       if (appointmentRequest.name && appointmentRequest.date && appointmentRequest.time) {
         // Verificar disponibilidade
         const isAvailable = await checkAvailability(appointmentRequest.date, appointmentRequest.time)
@@ -496,15 +504,24 @@ export async function POST(request: NextRequest) {
           })
         }
 
-        // Criar agendamento com dados completos
+        // Criar agendamento com dados completos e validação
         const appointmentData = {
-          name: appointmentRequest.name,
-          phone: phone,
-          email: email,
-          classType: appointmentRequest.classType!,
-          scheduledDate: appointmentRequest.date,
-          scheduledTime: appointmentRequest.time,
+          name: appointmentRequest.name!,
+          phone: phone!,
+          email: email!,
+          classType: appointmentRequest.classType || 'Musculação',
+          scheduledDate: appointmentRequest.date!,
+          scheduledTime: appointmentRequest.time!,
           notes: `Agendamento via chat inteligente - ${appointmentRequest.name}`
+        }
+
+        // Validação adicional antes de enviar
+        if (!appointmentData.scheduledDate || !appointmentData.scheduledTime) {
+          console.error('Erro: Data ou horário undefined:', { date: appointmentRequest.date, time: appointmentRequest.time })
+          return NextResponse.json({
+            success: true,
+            response: `Ops! Parece que houve um problema com os dados. Vamos tentar novamente? Qual dia e horário você prefere?`
+          })
         }
 
         const result = await createAppointment(appointmentData)
@@ -539,53 +556,48 @@ ORIENTAÇÕES GERAIS:
 - Mantenha respostas concisas mas informativas
 - Sempre que mencionar contato, use as informações oficiais da academia
 
-AGENDAMENTO INTELIGENTE (PRIORIDADE MÁXIMA):
-- DETECTE QUALQUER menção a agendamento, aula, marcar, etc. e assuma controle do fluxo
-- INTERPRETE frases naturais automaticamente:
-  * "Quero agendar para sábado de manhã" → identifica data e horário
-  * "Agende musculação amanhã às 14h" → identifica tipo, data e horário
-  * "Quero marcar uma aula" → inicia fluxo coletando dados faltantes
-- IDENTIFIQUE automaticamente:
-  * Nome: extraia de frases como "meu nome é João" ou pergunte se faltar
-  * Data: converta "amanhã", "próximo sábado", "segunda" para datas reais
-  * Horário: use padrão 9h se não informado, ou extraia "14h", "manhã", "tarde"
-  * Tipo: padrão "Musculação", ou identifique "crossfit", "pilates", etc.
-- COLETA PROGRESSIVA DE DADOS:
-  * Peça apenas informações essenciais (nome, data, horário)
-  * Não peça telefone/email se já foram fornecidos anteriormente
-  * Use dados já coletados para personalizar respostas
-  * Seja específico: "Qual horário você prefere?" em vez de "Me dê mais detalhes"
-- VALIDE disponibilidade antes de confirmar
-- CONFIRME com mensagem amigável incluindo contato oficial
-- REGISTRE automaticamente na API e informe sucesso
-- TRATE erros (horário ocupado) sugerindo alternativas automaticamente
-- PERMITA cancelar dizendo "cancelar" ou "não quero"
+AGENDAMENTO INTELIGENTE (SOMENTE QUANDO EXPLICITAMENTE SOLICITADO):
+- APENAS inicie agendamento quando o usuário EXPRESSAMENTE pedir para agendar/marcar
+- NÃO force agendamento em conversas gerais sobre academia
+- Exemplos de quando AGENDAR:
+  * "Quero agendar uma aula"
+  * "Gostaria de marcar musculação"
+  * "Preciso reservar horário"
+- Exemplos de quando NÃO agendar:
+  * "Quero conhecer a academia" → apenas informe
+  * "Sou novo aqui" → dê boas-vindas e informações
+  * "Como funciona?" → explique sem agendar
+- INTERPRETE frases naturais apenas quando for intenção clara de agendamento
+- IDENTIFIQUE automaticamente dados APENAS no contexto de agendamento
+- COLETA PROGRESSIVA DE DADOS apenas quando agendamento confirmado
 
-FLUXO CONVERSACIONAL INTELIGENTE:
-- NUNCA diga "vou pensar" ou "vou verificar" - resolva imediatamente ou direcione
-- Se não souber responder, direcione para WhatsApp com contexto
-- Mantenha conversa fluida - não faça perguntas desnecessárias
+FLUXO CONVERSACIONAL NATURAL:
+- Mantenha conversa fluida e natural
+- Responda dúvidas sobre academia normalmente
+- Só mude para modo agendamento quando usuário confirmar interesse
 - Use informações do contexto para personalizar respostas
-- Antecipe necessidades do usuário baseado no histórico
+- Antecipe necessidades baseado no histórico da conversa
 
-QUANDO RESPONDER DIRETAMENTE (usando knowledge base):
+QUANDO RESPONDER DIRETAMENTE (sempre que possível):
 - Horários de funcionamento
 - Equipamentos disponíveis
 - Tipos de aulas oferecidas
 - Informações gerais sobre planos
 - Dicas básicas de treino
 - Localização e contato oficial
+- Informações sobre promoções quando perguntado
+- Sugestões de parceiros quando relevante
 
-COLETA DE DADOS DO USUÁRIO:
-- Para novos usuários, colete nome, interesse e objetivo de forma leve
-- Use dados coletados para personalizar respostas e inferências
+COLETA DE DADOS DO USUÁRIO (apenas quando necessário):
+- Para agendamento: colete nome, data, horário de forma natural
+- Use dados coletados para personalizar respostas
 - Memorize informações fornecidas para evitar perguntas repetidas
-- Seja eficiente: não peça dados que já foram fornecidos
+- Seja eficiente: não peça dados desnecessários
 
 WHATSAPP APENAS QUANDO NECESSÁRIO:
-- Use WhatsApp para matrículas, cancelamentos, dúvidas complexas ou quando API falhar
+- Use WhatsApp para matrículas, cancelamentos, dúvidas complexas
 - Sempre forneça o link correto: ${whatsappUrl}
-- Direcionamento amigável: "Para isso é melhor falar direto no WhatsApp!"
+- Direcionamento amigável: "Para agendar é melhor falar direto no WhatsApp!"
 
 CONHECIMENTO BASE (use quando relevante):
 ${knowledgeText}
@@ -599,7 +611,7 @@ ${partnersText}
 
 ${adsText}
 
-INSTRUÇÕES PARA RESPONDER CONSULTAS ESPECÍFICAS:
+INSTRUÇÕES PARA RESPONDER CONSULTAS:
 
 PROMOÇÕES:
 - Quando perguntar sobre "promoções", "ofertas", "descontos": Liste todas ativas
@@ -607,12 +619,12 @@ PROMOÇÕES:
 - Incentive a aproveitar mas não force
 
 PARCEIROS:
-- Quando mencionarem profissões (nutricionista, fisioterapeuta): Sugira parceiros
+- Quando mencionarem profissões específicas: Sugira parceiros relevantes
 - Forneça informações de contato oficiais
 - Mantenha tom profissional
 
 ANÚNCIOS:
-- Mencione serviços adicionais apenas quando relevante
+- Mencione serviços adicionais apenas quando relevante ao contexto
 - Seja informativo e útil, não "vendedor"
 - Use tom casual: "Ah, e temos também..."
 
