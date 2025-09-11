@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Calendar, ArrowLeft, Share2, Copy, Check, MessageCircle, Facebook, Twitter, Instagram } from "lucide-react"
+import { Calendar, ArrowLeft, Share2, Copy, Check, MessageCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { SocialShareButtons } from "@/components/ui/social-share-buttons"
 import Link from "next/link"
 import { generatePromotionMessage, generateWhatsAppUrl, copyToClipboard } from "@/lib/utils"
 
@@ -72,8 +71,18 @@ export function PromotionDetailView({ promotion }: PromotionDetailViewProps) {
 
   const handleShareWhatsApp = () => {
     const shareUrl = getPromotionUrl()
-    const whatsappShareMessage = `Confira esta promoção incrível: ${promotion.title}\n\n${promotion.description}\n\nLink: ${shareUrl}?utm_source=whatsapp&utm_medium=share&utm_campaign=promotion\n\nCódigo: ${promotion.uniqueCode || promotion.id}`
-    const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappShareMessage)}`
+    const urlWithUtm = `${shareUrl}?utm_source=whatsapp&utm_medium=share&utm_campaign=promotion`
+
+    // Enhanced WhatsApp sharing with image
+    let whatsappMessage = `🎯 *${promotion.title}*\n\n${promotion.description}\n\n📅 *Válido até:* ${formatDate(promotion.validUntil)}\n🔢 *Código:* ${promotion.uniqueCode || promotion.id}\n\n`
+
+    if (promotion.image) {
+      whatsappMessage += `🖼️ *Imagem:* ${promotion.image}\n\n`
+    }
+
+    whatsappMessage += `🔗 *Link:* ${urlWithUtm}\n\n💪 Venha conhecer a Gym Starter!`
+
+    const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`
     window.open(whatsappShareUrl, '_blank', 'noopener,noreferrer')
   }
 
@@ -95,60 +104,26 @@ export function PromotionDetailView({ promotion }: PromotionDetailViewProps) {
                 onClick={handleCopyLink}
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 px-3"
                 title="Copiar link"
               >
                 {copied ? (
-                  <Check className="h-3 w-3 text-green-600" />
+                  <Check className="h-3 w-3 text-green-600 mr-1" />
                 ) : (
-                  <Copy className="h-3 w-3" />
+                  <Copy className="h-3 w-3 mr-1" />
                 )}
-              </Button>
-
-              <Button
-                onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl + '?utm_source=facebook&utm_medium=social&utm_campaign=promotion')}`, '_blank')}
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-                title="Compartilhar no Facebook"
-              >
-                <Facebook className="h-3 w-3" />
-              </Button>
-
-              <Button
-                onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl + '?utm_source=twitter&utm_medium=social&utm_campaign=promotion')}&text=${encodeURIComponent(promotion.title)}`, '_blank')}
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-                title="Compartilhar no Twitter"
-              >
-                <Twitter className="h-3 w-3" />
-              </Button>
-
-              <Button
-                onClick={async () => {
-                  const success = await copyToClipboard(shareUrl + '?utm_source=instagram&utm_medium=social&utm_campaign=promotion')
-                  if (success) {
-                    setCopied(true)
-                    setTimeout(() => setCopied(false), 2000)
-                  }
-                }}
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0"
-                title="Copiar link para Instagram"
-              >
-                <Instagram className="h-3 w-3" />
+                <span className="text-xs">{copied ? 'Copiado!' : 'Copiar'}</span>
               </Button>
 
               <Button
                 onClick={handleShareWhatsApp}
                 size="sm"
                 variant="outline"
-                className="h-8 w-8 p-0"
+                className="h-8 px-3"
                 title="Compartilhar no WhatsApp"
               >
-                <MessageCircle className="h-3 w-3" />
+                <MessageCircle className="h-3 w-3 mr-1" />
+                <span className="text-xs">WhatsApp</span>
               </Button>
 
               <Button
@@ -255,65 +230,31 @@ export function PromotionDetailView({ promotion }: PromotionDetailViewProps) {
               </div>
 
               {/* CTA Section */}
-              <div className="flex items-center justify-center gap-2">
-                <Button
-                  onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl + '?utm_source=facebook&utm_medium=social&utm_campaign=promotion')}`, '_blank')}
-                  variant="outline"
-                  size="lg"
-                  className="h-12 w-12 p-0"
-                  title="Compartilhar no Facebook"
-                >
-                  <Facebook className="h-5 w-5" />
-                </Button>
-
-                <Button
-                  onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl + '?utm_source=twitter&utm_medium=social&utm_campaign=promotion')}&text=${encodeURIComponent(promotion.title)}`, '_blank')}
-                  variant="outline"
-                  size="lg"
-                  className="h-12 w-12 p-0"
-                  title="Compartilhar no Twitter"
-                >
-                  <Twitter className="h-5 w-5" />
-                </Button>
-
-                <Button
-                  onClick={async () => {
-                    const success = await copyToClipboard(shareUrl + '?utm_source=instagram&utm_medium=social&utm_campaign=promotion')
-                    if (success) {
-                      setCopied(true)
-                      setTimeout(() => setCopied(false), 2000)
-                    }
-                  }}
-                  variant="outline"
-                  size="lg"
-                  className="h-12 w-12 p-0"
-                  title="Copiar link para Instagram"
-                >
-                  <Instagram className="h-5 w-5" />
-                </Button>
-
+              <div className="flex items-center justify-center gap-4">
                 <Button
                   onClick={handleCopyLink}
                   variant="outline"
                   size="lg"
-                  className="h-12 w-12 p-0"
+                  className="h-12 px-6"
                   title="Copiar link"
                 >
                   {copied ? (
-                    <Check className="h-5 w-5 text-green-600" />
+                    <Check className="h-5 w-5 text-green-600 mr-2" />
                   ) : (
-                    <Copy className="h-5 w-5" />
+                    <Copy className="h-5 w-5 mr-2" />
                   )}
+                  <span>{copied ? 'Copiado!' : 'Copiar Link'}</span>
                 </Button>
 
                 <Button
                   onClick={handleShareWhatsApp}
                   variant="outline"
                   size="lg"
-                  className="h-12 w-12 p-0"
+                  className="h-12 px-6"
                   title="Compartilhar no WhatsApp"
                 >
-                  <MessageCircle className="h-5 w-5" />
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                  <span>Compartilhar</span>
                 </Button>
 
                 <Button
