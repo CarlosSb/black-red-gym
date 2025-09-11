@@ -730,14 +730,16 @@ async function main() {
 
   // 12. Criar base de conhecimento para o chatbot
   console.log('🧠 Criando base de conhecimento...')
+  console.log('📊 Iniciando criação de knowledge base...')
 
-  await prisma.knowledgeBase.createMany({
-    data: [
-      {
-        question: "Quais são os horários de funcionamento da academia?",
-        answer: "A Gym Starter funciona de segunda a sexta-feira das 5:30h às 23:00h, aos sábados das 7:00h às 20:00h e domingos das 8:00h às 18:00h. Temos horário estendido para atender todos os perfis de alunos!",
-        category: "horarios"
-      },
+  try {
+    await prisma.knowledgeBase.createMany({
+      data: [
+        {
+          question: "Quais são os horários de funcionamento da academia?",
+          answer: "A Gym Starter funciona de segunda a sexta-feira das 5:30h às 23:00h, aos sábados das 7:00h às 20:00h e domingos das 8:00h às 18:00h. Temos horário estendido para atender todos os perfis de alunos!",
+          category: "horarios"
+        },
       {
         question: "Como faço para me matricular?",
         answer: "Para se matricular na Gym Starter, você pode vir pessoalmente à academia ou fazer seu cadastro online através do nosso site. Oferecemos aulas experimentais gratuitas para você conhecer nossas instalações e modalidades antes de decidir.",
@@ -876,6 +878,12 @@ async function main() {
     ],
     skipDuplicates: true,
   })
+
+    console.log('✅ Knowledge base criada com sucesso!')
+  } catch (error) {
+    console.error('❌ Erro ao criar knowledge base:', error)
+    throw error
+  }
 
   console.log('🎉 Seed concluído com sucesso!')
   console.log('📊 Dados criados:')
