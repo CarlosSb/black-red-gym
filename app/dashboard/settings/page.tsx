@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Image, Star, Plus, Trash2, Bot } from "lucide-react"
+import { Save, Building, Clock, Palette, Bell, Loader2, Upload, Star, Plus, Trash2, Bot } from "lucide-react"
 import DataService, { type AcademySettingsData } from "@/lib/data-service"
 
 export default function SettingsPage() {
@@ -332,7 +333,7 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Image className="h-5 w-5" />
+              <Upload className="h-5 w-5" />
               Logo da Academia
             </CardTitle>
             <CardDescription>Faça upload do logo da academia</CardDescription>
@@ -341,9 +342,11 @@ export default function SettingsPage() {
             <div className="flex items-center gap-4">
               {settings.logo && (
                 <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted">
-                  <img
+                  <Image
                     src={settings.logo}
                     alt="Logo da academia"
+                    width={80}
+                    height={80}
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -416,9 +419,11 @@ export default function SettingsPage() {
               <div className="flex items-center gap-4">
                 {settings.heroImage && (
                   <div className="w-20 h-20 border rounded-lg overflow-hidden bg-muted">
-                    <img
+                    <Image
                       src={settings.heroImage}
                       alt="Imagem do hero"
+                      width={80}
+                      height={80}
                       className="w-full h-full object-cover"
                     />
                   </div>

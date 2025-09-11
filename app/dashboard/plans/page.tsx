@@ -118,8 +118,8 @@ export default function PlansPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl">{plan.name}</CardTitle>
-                <Badge variant={plan.status === "active" ? "default" : "secondary"}>
-                  {plan.status === "active" ? "Ativo" : "Inativo"}
+                <Badge variant={plan.status === "ACTIVE" ? "default" : "secondary"}>
+                  {plan.status === "ACTIVE" ? "Ativo" : "Inativo"}
                 </Badge>
               </div>
               <CardDescription>{plan.description}</CardDescription>

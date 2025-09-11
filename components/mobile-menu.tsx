@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Menu, X, Dumbbell } from "lucide-react"
@@ -47,7 +48,7 @@ export function MobileMenu({ settings }: MobileMenuProps) {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
               {settings.logo ? (
-                <img src={settings.logo} alt="Logo" className="h-8 w-8 object-contain" />
+                <Image src={settings.logo} alt="Logo" width={32} height={32} className="h-8 w-8 object-contain" />
               ) : (
                 <Dumbbell className="h-8 w-8 text-red-accent" />
               )}
