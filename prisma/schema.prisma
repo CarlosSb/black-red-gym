@@ -76,6 +76,9 @@ model AcademySettings {
   assistantEnabled Boolean @default(true) // Enable/disable AI assistant
   assistantDelay Int @default(5000) // Delay in ms before showing assistant
   assistantWelcomeMessage String? // Custom welcome message
+  allowScheduling String @default("onIntent") // Control scheduling behavior: "onIntent", "always", "off"
+  schedulingMode String @default("conservative") // Scheduling mode: "conservative", "proactive", "disabled"
+  fallbackResponse String? // Default response when scheduling is not allowed
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

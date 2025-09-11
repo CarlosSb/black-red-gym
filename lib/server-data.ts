@@ -167,7 +167,7 @@ export async function getServerPlans(): Promise<PlanData[]> {
       features: plan.features,
       activeMembers: plan.activeMembers,
       monthlyRevenue: plan.monthlyRevenue,
-      status: plan.status.toLowerCase() as "active" | "inactive",
+      status: plan.status,
       popular: plan.popular,
       createdAt: plan.createdAt.toISOString(),
       updatedAt: plan.updatedAt.toISOString(),

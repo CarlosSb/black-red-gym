@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -424,9 +425,11 @@ export default function PartnersPage() {
                     {/* Logo */}
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center overflow-hidden">
                       {getImageSource(partner.logo) ? (
-                        <img
+                        <Image
                           src={partner.logo!}
                           alt={partner.name}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
                           onError={() => handleImageError(partner.logo!)}
                         />

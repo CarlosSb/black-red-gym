@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Dumbbell, Users, Clock, Trophy, Star, MapPin, Phone, Mail } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { getServerSettings, getServerPlans } from "@/lib/server-data"
 import { MobileMenu } from "@/components/mobile-menu"
 import { HomePageClient } from "@/components/home-page-client"
@@ -33,7 +34,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {settings.logo ? (
-              <img src={settings.logo} alt="Logo" className="h-8 w-8 object-contain" />
+              <Image src={settings.logo} alt="Logo" width={32} height={32} className="h-8 w-8 object-contain" />
             ) : (
               <Dumbbell className="h-8 w-8 text-red-accent" />
             )}
@@ -208,7 +209,7 @@ export default async function HomePage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {plans
-              .filter(plan => plan.status === "active")
+              .filter(plan => plan.status === "ACTIVE")
               .sort((planA, planB) => planA.price - planB.price)
               .map((plan) => (
               <Card 
@@ -288,9 +289,11 @@ export default async function HomePage() {
               </div>
             </div>
             <div className="bg-black-red rounded-lg p-8 text-white">
-              <img
+              <Image
                 src="/modern-gym-interior-with-red-and-black-equipment.jpg"
                 alt={`Interior da academia ${settings.name}`}
+                width={400}
+                height={256}
                 className="w-full h-64 object-cover rounded-lg mb-6"
               />
               <h4 className="text-xl font-bold mb-4">Ambiente Motivador</h4>

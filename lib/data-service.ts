@@ -9,7 +9,7 @@ export type PlanData = {
   features: string[]
   activeMembers: number
   monthlyRevenue: number
-  status: "active" | "inactive"
+  status: "ACTIVE" | "INACTIVE"
   popular?: boolean
   createdAt: string
   updatedAt: string

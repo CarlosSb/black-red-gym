@@ -38,7 +38,7 @@ export default function DashboardPage() {
   // Calculate stats from real data
   const stats = {
     totalMembers: Array.isArray(plans) ? plans.reduce((sum, plan) => sum + plan.activeMembers, 0) : 0,
-    activeMembers: Array.isArray(plans) ? plans.reduce((sum, plan) => (plan.status === "active" ? sum + plan.activeMembers : sum), 0) : 0,
+    activeMembers: Array.isArray(plans) ? plans.reduce((sum, plan) => (plan.status === "ACTIVE" ? sum + plan.activeMembers : sum), 0) : 0,
     monthlyRevenue: Array.isArray(plans) ? plans.reduce((sum, plan) => sum + plan.monthlyRevenue, 0) : 0,
     newMembersThisMonth: Math.floor(Math.random() * 50) + 20, // Mock data
     pendingMessages: Array.isArray(messages) ? messages.filter((m) => m.status === "unread").length : 0,

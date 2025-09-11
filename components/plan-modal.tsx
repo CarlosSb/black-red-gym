@@ -33,7 +33,7 @@ export function PlanModal({ isOpen, onClose, onSave, plan }: PlanModalProps) {
     price: 0,
     description: "",
     features: [""],
-    status: "active" as "active" | "inactive",
+    status: "ACTIVE" as "ACTIVE" | "INACTIVE",
     popular: false,
     activeMembers: 0,
     monthlyRevenue: 0,
@@ -57,7 +57,7 @@ export function PlanModal({ isOpen, onClose, onSave, plan }: PlanModalProps) {
         price: 0,
         description: "",
         features: [""],
-        status: "active",
+        status: "ACTIVE",
         popular: false,
         activeMembers: 0,
         monthlyRevenue: 0,
@@ -221,9 +221,9 @@ export function PlanModal({ isOpen, onClose, onSave, plan }: PlanModalProps) {
             <div className="flex items-center space-x-2">
               <Switch
                 id="status"
-                checked={formData.status === "active"}
+                checked={formData.status === "ACTIVE"}
                 onCheckedChange={(checked) =>
-                  setFormData((prev) => ({ ...prev, status: checked ? "active" : "inactive" }))
+                  setFormData((prev) => ({ ...prev, status: checked ? "ACTIVE" : "INACTIVE" }))
                 }
               />
               <Label htmlFor="status">Plano Ativo</Label>

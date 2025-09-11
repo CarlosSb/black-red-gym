@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Calendar, Share2, MessageCircle, Facebook, Twitter, Instagram, Copy, Check } from "lucide-react"
+import { Calendar, Share2, MessageCircle, Copy, Check } from "lucide-react"
 import { StandardCard } from "./standard-card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -77,31 +77,19 @@ export function PromotionCard({ promotion, onClick, className }: PromotionCardPr
     e.stopPropagation()
     const baseUrl = getPromotionUrl()
     const urlWithUtm = `${baseUrl}?utm_source=${platform}&utm_medium=social&utm_campaign=promotion`
-    const text = encodeURIComponent(promotion.title)
 
-    switch (platform) {
-      case 'facebook':
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlWithUtm)}`
-        window.open(facebookUrl, '_blank', 'noopener,noreferrer')
-        break
-      case 'twitter':
-        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(urlWithUtm)}&text=${text}`
-        window.open(twitterUrl, '_blank', 'noopener,noreferrer')
-        break
-      case 'instagram':
-        // Instagram doesn't have a direct share URL, so copy to clipboard
-        copyToClipboard(urlWithUtm).then(success => {
-          if (success) {
-            setCopied(true)
-            setTimeout(() => setCopied(false), 2000)
-          }
-        })
-        break
-      case 'whatsapp':
-        const whatsappShareMessage = `Confira esta promoção incrível: ${promotion.title}\n\n${promotion.description}\n\nLink: ${urlWithUtm}\n\nCódigo: ${promotion.uniqueCode || promotion.id}`
-        const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappShareMessage)}`
-        window.open(whatsappShareUrl, '_blank', 'noopener,noreferrer')
-        break
+    if (platform === 'whatsapp') {
+      // Enhanced WhatsApp sharing with image
+      let whatsappMessage = `🎯 *${promotion.title}*\n\n${promotion.description}\n\n📅 *Válido até:* ${formatDate(promotion.validUntil)}\n🔢 *Código:* ${promotion.uniqueCode || promotion.id}\n\n`
+
+      if (promotion.image) {
+        whatsappMessage += `🖼️ *Imagem:* ${promotion.image}\n\n`
+      }
+
+      whatsappMessage += `🔗 *Link:* ${urlWithUtm}\n\n💪 Venha conhecer a Gym Starter!`
+
+      const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`
+      window.open(whatsappShareUrl, '_blank', 'noopener,noreferrer')
     }
   }
 
@@ -177,59 +165,31 @@ export function PromotionCard({ promotion, onClick, className }: PromotionCardPr
         </div>
 
         {/* Share Buttons */}
-        <div className="flex items-center justify-center gap-1 mb-3">
+        <div className="flex items-center justify-center gap-2 mb-3">
           <Button
             size="sm"
             variant="outline"
-            className="h-7 w-7 p-0"
-            onClick={(e) => handleSocialShare('facebook', e)}
-            title="Compartilhar no Facebook"
-          >
-            <Facebook className="h-3 w-3" />
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 w-7 p-0"
-            onClick={(e) => handleSocialShare('twitter', e)}
-            title="Compartilhar no Twitter"
-          >
-            <Twitter className="h-3 w-3" />
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 w-7 p-0"
-            onClick={(e) => handleSocialShare('instagram', e)}
-            title="Compartilhar no Instagram"
-          >
-            <Instagram className="h-3 w-3" />
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-7 w-7 p-0"
+            className="h-8 px-3"
             onClick={handleCopyLink}
             title="Copiar link"
           >
             {copied ? (
-              <Check className="h-3 w-3 text-green-600" />
+              <Check className="h-3 w-3 text-green-600 mr-1" />
             ) : (
-              <Copy className="h-3 w-3" />
+              <Copy className="h-3 w-3 mr-1" />
             )}
+            <span className="text-xs">{copied ? 'Copiado!' : 'Copiar'}</span>
           </Button>
 
           <Button
             size="sm"
             variant="outline"
-            className="h-7 w-7 p-0"
+            className="h-8 px-3"
             onClick={(e) => handleSocialShare('whatsapp', e)}
             title="Compartilhar no WhatsApp"
           >
-            <MessageCircle className="h-3 w-3" />
+            <MessageCircle className="h-3 w-3 mr-1" />
+            <span className="text-xs">WhatsApp</span>
           </Button>
         </div>
 

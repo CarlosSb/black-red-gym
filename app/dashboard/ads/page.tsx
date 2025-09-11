@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -379,9 +380,11 @@ export default function AdsPage() {
                     {/* Preview */}
                     <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
                       {getImageSource(ad.image) ? (
-                        <img
+                        <Image
                           src={ad.image!}
                           alt={ad.title}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-cover"
                           onError={() => handleImageError(ad.image!)}
                         />

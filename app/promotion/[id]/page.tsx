@@ -11,9 +11,17 @@ interface PageProps {
 
 async function getPromotion(id: string) {
   try {
-    const promotion = await prisma.promotion.findUnique({
+    // Try to find by id first
+    let promotion = await prisma.promotion.findUnique({
       where: { id }
     })
+
+    // If not found by id, try by uniqueCode
+    if (!promotion) {
+      promotion = await prisma.promotion.findUnique({
+        where: { uniqueCode: id }
+      })
+    }
 
     if (!promotion || !promotion.isActive) {
       return null

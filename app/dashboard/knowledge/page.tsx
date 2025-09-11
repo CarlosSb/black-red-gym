@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
@@ -48,11 +48,7 @@ export default function KnowledgePage() {
     }
   })
 
-  useEffect(() => {
-    loadKnowledge()
-  }, [])
-
-  const loadKnowledge = async () => {
+  const loadKnowledge = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch("/api/knowledge")
@@ -75,7 +71,11 @@ export default function KnowledgePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    loadKnowledge()
+  }, [loadKnowledge])
 
   const onSubmit = async (data: KnowledgeFormData) => {
     try {

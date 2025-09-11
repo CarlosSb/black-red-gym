@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -178,9 +179,11 @@ export default function AboutManagementPage() {
             <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
               {aboutData.image ? (
                 <div className="space-y-4">
-                  <img
+                  <Image
                     src={aboutData.image}
                     alt="Imagem da seção Sobre"
+                    width={400}
+                    height={192}
                     className="max-w-full h-48 object-cover rounded-lg mx-auto"
                   />
                   <div className="flex gap-2 justify-center">
